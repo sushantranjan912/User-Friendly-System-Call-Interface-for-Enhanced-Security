@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure System Call Interface - Enterprise Security</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/components/buttons.css">
+    <style>
+        /* Modern Landing Page with Dark Theme */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #000000;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        /* Navbar */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .navbar-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1.25rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #ffffff;
+            text-decoration: none;
+        }
+
+        .navbar-menu {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+            list-style: none;
+        }
+
+        .navbar-link {
+            color: #e5e7eb;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .navbar-link:hover {
+            color: #2563eb;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            padding: 6rem 2rem 4rem;
+            overflow: hidden;
+        }
+
+        /* Animated Tech Background */
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                radial-gradient(circle at 20% 50%, rgba(37, 99, 235, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%);
+            z-index: -1;
+        }
+
+        /* Grid Pattern Overlay */
+        .hero::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image:
+                linear-gradient(rgba(37, 99, 235, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(37, 99, 235, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: -1;
+            opacity: 0.5;
+        }
+
+        .hero-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .hero-bottom {
+            max-width: 1400px;
+            margin: 3rem auto 0;
+            text-align: center;
+        }
+
+        .hero-content {
+            text-align: left;
+        }
+
+        .hero-visual {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hero-visual img {
+            width: 100%;
+            max-width: 500px;
+            filter: drop-shadow(0 20px 60px rgba(37, 99, 235, 0.6));
+            animation: heroFloat 6s ease-in-out infinite;
+        }
+
+        @keyframes heroFloat {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            color: #ffffff;
+            letter-spacing: -0.02em;
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: #9ca3af;
+            max-width: 700px;
+            margin: 0 auto 3rem;
+            line-height: 1.6;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 4rem;
+        }
+
+        .btn {
+            padding: 1rem 2.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+            color: white;
+            box-shadow: 0 8px 32px rgba(37, 99, 235, 0.5);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 48px rgba(37, 99, 235, 0.7);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            color: #e5e7eb;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(37, 99, 235, 0.5);
+        }
+
+        /* Feature Badges */
+        .hero-features {
+            display: flex;
+            gap: 3rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .feature-badge {
+            text-align: center;
+        }
+
+        .feature-badge-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #9ca3af;
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-badge-value {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        /* Features Grid Section */
+        .features-section {
+            padding: 6rem 2rem;
+            background: rgba(17, 24, 39, 0.5);
+        }
+
+        .features-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 1rem;
+            color: #ffffff;
+        }
+
+        .section-subtitle {
+            font-size: 1.125rem;
+            color: #9ca3af;
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: rgba(31, 41, 55, 0.5);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 2rem;
+            border-radius: 16px;
+            transition: all 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(37, 99, 235, 0.5);
+            box-shadow: 0 16px 48px rgba(37, 99, 235, 0.2);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            filter: drop-shadow(0 4px 12px rgba(37, 99, 235, 0.4));
+        }
+
+        .feature-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            color: #ffffff;
+        }
+
+        .feature-description {
+            color: #9ca3af;
+            line-height: 1.6;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(10px);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: rgba(31, 41, 55, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 2.5rem;
+            max-width: 450px;
+            width: 90%;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 2rem;
+            color: #9ca3af;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .modal-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: #ffffff;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #e5e7eb;
+        }
+
+        .form-input,
+        .form-select {
+            width: 100%;
+            padding: 0.875rem;
+            background: rgba(17, 24, 39, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 1rem;
+        }
+
+        .form-input:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+
+        .form-error {
+            color: #ef4444;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+            display: none;
+        }
+
+        .form-error.visible {
+            display: block;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+
+            .navbar-menu {
+                gap: 1rem;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+                width: 100%;
+                max-width: 300px;
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="/" class="navbar-brand">🔒 SysCall</a>
+            <ul class="navbar-menu">
+                <li><a href="#features" class="navbar-link">Features</a></li>
+                <li><a href="#about" class="navbar-link">About</a></li>
+                <li><a href="#" class="navbar-link" id="loginBtn">Login</a></li>
+                <li><a href="#" class="btn btn-primary btn-sm" style="padding: 0.625rem 1.5rem; font-size: 0.875rem;"
+                        id="getStartedBtn">Get Started</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+        <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-container">
+            <div class="hero-content">
+                <h1 class="hero-title">Secure System Call Interface</h1>
+                <p class="hero-subtitle">Execute system commands with enterprise-grade security, authentication, and
+                    comprehensive audit logging</p>
+
+                <div class="hero-buttons">
+                    <button class="btn btn-primary" id="heroGetStarted">Get Started Free</button>
+                    <button class="btn btn-secondary">Learn More</button>
+                </div>
+            </div>
+            
+            <div class="hero-visual">
+                <img src="assets/images/folder_hero.png" alt="Secure Files">
+            </div>
+        </div>
+        
+        <div class="hero-bottom">
+            <div class="hero-features">
+                <div class="feature-badge">
+                    <div class="feature-badge-title">SECURE</div>
+                    <div class="feature-badge-value">100%</div>
+                </div>
+                <div class="feature-badge">
+                    <div class="feature-badge-title">MONITORING</div>
+                    <div class="feature-badge-value">24/7</div>
+                </div>
+                <div class="feature-badge">
+                    <div class="feature-badge-title">LOGGING</div>
+                    <div class="feature-badge-value">Real-time</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section" id="features">
+        <div class="features-container">
+            <h2 class="section-title">Powerful Features</h2>
+            <p class="section-subtitle">Everything you need for secure system call management</p>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🔐</div>
+                    <h3 class="feature-title">Enhanced Security</h3>
+                    <p class="feature-description">JWT-based authentication, role-based access control, and command
+                        whitelisting ensure maximum security</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3 class="feature-title">Fast Execution</h3>
+                    <p class="feature-description">Execute system calls with real-time output, error handling, and
+                        execution history tracking</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3 class="feature-title">Audit Logging</h3>
+                    <p class="feature-description">Comprehensive logging of all actions with filtering, search, and
+                        export capabilities</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Login Modal -->
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <button class="modal-close" id="closeLogin">&times;</button>
+            <h2 class="modal-title">Login</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label class="form-label">Username</label>
+                    <input type="text" class="form-input" id="loginUsername" placeholder="Enter username" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-input" id="loginPassword" placeholder="Enter password" required>
+                </div>
+                <div class="form-error" id="loginError"></div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div class="modal" id="registerModal">
+        <div class="modal-content">
+            <button class="modal-close" id="closeRegister">&times;</button>
+            <h2 class="modal-title">Create Account</h2>
+            <form id="registerForm">
+                <div class="form-group">
+                    <label class="form-label">Username</label>
+                    <input type="text" class="form-input" id="registerUsername" placeholder="Choose username" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-input" id="registerEmail" placeholder="Enter email" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-input" id="registerPassword" placeholder="Create password"
+                        required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Role</label>
+                    <select class="form-select" id="registerRole">
+                        <option value="user">User</option>
+                        <option value="admin">Admin</option>
+                        <option value="viewer">Viewer</option>
+                    </select>
+                </div>
+                <div class="form-error" id="registerError"></div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Create
+                    Account</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/modules/api.js"></script>
+    <script src="js/modules/auth.js"></script>
+    <script src="js/modules/toast.js"></script>
+    <script>
+        // Modal handlers
+        const loginModal = document.getElementById('loginModal');
+        const registerModal = document.getElementById('registerModal');
+
+        document.getElementById('loginBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            loginModal.classList.add('active');
+        });
+
+        document.getElementById('getStartedBtn').addEventListener('click', () => {
+            registerModal.classList.add('active');
+        });
+
+        document.getElementById('heroGetStarted').addEventListener('click', () => {
+            registerModal.classList.add('active');
+        });
+
+        document.getElementById('closeLogin').addEventListener('click', () => {
+            loginModal.classList.remove('active');
+        });
+
+        document.getElementById('closeRegister').addEventListener('click', () => {
+            registerModal.classList.remove('active');
+        });
+
+        // Login form
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+            const errorEl = document.getElementById('loginError');
+
+            try {
+                const result = await authAPI.login(username, password);
+                if (result.success) {
+                    localStorage.setItem('token', result.data.token);
+                    localStorage.setItem('user', JSON.stringify(result.data.user));
+                    window.location.href = 'pages/dashboard.html';
+                }
+            } catch (error) {
+                errorEl.textContent = error.message;
+                errorEl.classList.add('visible');
+            }
+        });
+
+        // Register form
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('registerUsername').value;
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            const role = document.getElementById('registerRole').value;
+            const errorEl = document.getElementById('registerError');
+
+            try {
+                const result = await authAPI.register(username, email, password, role);
+                if (result.success) {
+                    localStorage.setItem('token', result.data.token);
+                    localStorage.setItem('user', JSON.stringify(result.data.user));
+                    window.location.href = 'pages/dashboard.html';
+                }
+            } catch (error) {
+                errorEl.textContent = error.message;
+                errorEl.classList.add('visible');
+            }
+        });
+
+        // Close modal on outside click
+        loginModal.addEventListener('click', (e) => {
+            if (e.target === loginModal) {
+                loginModal.classList.remove('active');
+            }
+        });
+
+        registerModal.addEventListener('click', (e) => {
+            if (e.target === registerModal) {
+                registerModal.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+
+</html>
