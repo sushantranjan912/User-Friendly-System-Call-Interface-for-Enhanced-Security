@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Viewer - System Call Interface</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/components/buttons.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            overflow: hidden;
+        }
+
+        .viewer-header {
+            height: 60px;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            box-shadow: var(--shadow-sm);
+            z-index: 10;
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .file-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .viewer-content {
+            flex: 1;
+            position: relative;
+            overflow: auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        /* Content Types */
+        .content-image {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            box-shadow: var(--shadow-md);
+            border-radius: 4px;
+        }
+
+        .content-text {
+            width: 100%;
+            height: 100%;
+            background: var(--bg-card);
+            color: var(--text-primary);
+            padding: 20px;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            white-space: pre-wrap;
+            overflow: auto;
+            border: 1px solid var(--border-color);
+        }
+
+        .content-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: white;
+        }
+
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--bg-primary);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 20;
+        }
+
+        .error-message {
+            text-align: center;
+            color: var(--danger);
+            padding: 20px;
+            background: rgba(255, 0, 0, 0.1);
+            border-radius: 8px;
+            border: 1px solid var(--danger);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="viewer-header">
+        <div class="file-info">
+            <span id="fileIcon">📄</span>
+            <span class="file-name" id="fileName">Loading...</span>
+        </div>
+        <div class="viewer-actions">
+            <button class="btn btn-primary btn-sm" id="downloadBtn">Download</button>
+            <button class="btn btn-outline btn-sm" onclick="window.close()">Close</button>
+        </div>
+    </div>
+
+    <div class="viewer-content" id="viewerContent">
+        <!-- Content will be injected here -->
+    </div>
+
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+        <p style="margin-top: 10px;">Loading file content...</p>
+    </div>
+
+    <script src="../js/modules/api.js"></script>
+    <script>
+        // Get file from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const filename = urlParams.get('file');
+
+        if (!filename) {
+            showError('No file specified');
+        } else {
+            document.getElementById('fileName').textContent = filename;
+            document.title = `${filename} - Viewer`;
+            loadFile(filename);
+        }
+
+        async function loadFile(filename) {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    window.location.href = '/';
+                    return;
+                }
+
+                // Get passcode from session storage if available
+                const passcode = sessionStorage.getItem(`file_passcode_${filename}`);
+                const headers = {
+                    'Authorization': `Bearer ${token}`
+                };
+                if (passcode) {
+                    headers['X-File-Passcode'] = passcode;
+                }
+
+                // First, try to read the file (checks VIEW permission)
+                const readResponse = await fetch(`${API_BASE_URL}/files/${encodeURIComponent(filename)}`, {
+                    headers: headers
+                });
+
+                if (!readResponse.ok) {
+                    const err = await readResponse.json();
+                    throw new Error(err.error || 'Failed to load file');
+                }
+
+                const data = await readResponse.json();
+
+                // Check if it's a binary file
+                if (data.data.is_binary) {
+                    // For binary files, download blob (we already checked VIEW permission)
+                    const downloadResponse = await fetch(`${API_BASE_URL}/files/download/${encodeURIComponent(filename)}`, {
+                        headers: headers
+                    });
+
+                    if (!downloadResponse.ok) {
+                        throw new Error('Failed to load binary file');
+                    }
+
+                    const blob = await downloadResponse.blob();
+                    const objectUrl = URL.createObjectURL(blob);
+                    const type = blob.type;
+
+                    renderContent(filename, type, objectUrl, blob);
+
+                    // Setup download button
+                    document.getElementById('downloadBtn').onclick = () => {
+                        const link = document.createElement('a');
+                        link.href = objectUrl;
+                        link.download = filename;
+                        link.click();
+                    };
+                } else {
+                    // For text files, we already have the content
+                    const content = data.data.content;
+                    const container = document.getElementById('viewerContent');
+                    container.innerHTML = `<pre class="content-text">${escapeHtml(content)}</pre>`;
+                    document.getElementById('fileIcon').textContent = '📝';
+
+                    // Setup download button for text files
+                    document.getElementById('downloadBtn').onclick = () => {
+                        const blob = new Blob([content], { type: 'text/plain' });
+                        const url = URL.createObjectURL(blob);
+                        const link = document.createElement('a');
+                        link.href = url;
+                        link.download = filename;
+                        link.click();
+                        URL.revokeObjectURL(url);
+                    };
+                }
+
+                document.getElementById('loadingOverlay').style.display = 'none';
+
+            } catch (error) {
+                showError(error.message);
+            }
+        }
+
+        function renderContent(filename, type, url, blob) {
+            const container = document.getElementById('viewerContent');
+            const ext = filename.split('.').pop().toLowerCase();
+
+            // Determine type based on extension or mime type
+            if (type.startsWith('image/') || ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'].includes(ext)) {
+                // Image
+                container.innerHTML = `<img src="${url}" class="content-image" alt="${filename}">`;
+                document.getElementById('fileIcon').textContent = '🖼️';
+            }
+            else if (type === 'application/pdf' || ext === 'pdf') {
+                // PDF
+                container.innerHTML = `<iframe src="${url}" class="content-iframe"></iframe>`;
+                document.getElementById('fileIcon').textContent = '📕';
+            }
+            else if (type.startsWith('video/') || ['mp4', 'webm', 'ogg'].includes(ext)) {
+                // Video
+                container.innerHTML = `
+                    <video controls class="content-image" style="max-height: 80vh;">
+                        <source src="${url}" type="${type}">
+                        Your browser does not support the video tag.
+                    </video>`;
+                document.getElementById('fileIcon').textContent = '🎥';
+            }
+            else if (type.startsWith('audio/') || ['mp3', 'wav'].includes(ext)) {
+                // Audio
+                container.innerHTML = `
+                    <audio controls style="width: 100%; max-width: 500px;">
+                        <source src="${url}" type="${type}">
+                        Your browser does not support the audio tag.
+                    </audio>`;
+                document.getElementById('fileIcon').textContent = '🎵';
+            }
+            else {
+                // Text / Code / Default
+                // For text, we need to read the blob as text
+                const reader = new FileReader();
+                reader.onload = function () {
+                    container.innerHTML = `<pre class="content-text">${escapeHtml(reader.result)}</pre>`;
+                };
+                reader.readAsText(blob);
+                document.getElementById('fileIcon').textContent = '📝';
+            }
+        }
+
+        function showError(msg) {
+            document.getElementById('loadingOverlay').style.display = 'none';
+            document.getElementById('viewerContent').innerHTML = `
+                <div class="error-message">
+                    <h3>Error</h3>
+                    <p>${msg}</p>
+                    <button class="btn btn-primary btn-sm mt-2" onclick="window.close()">Close Window</button>
+                </div>
+            `;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recycle Bin - System Call Interface</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/components/cards.css">
+    <link rel="stylesheet" href="../css/components/buttons.css">
+    <link rel="stylesheet" href="../css/animations.css">
+</head>
+<body>
+    <div class="container">
+        <div class="page-header">
+            <div>
+                <h1 class="gradient-text">🗑️ Recycle Bin</h1>
+                <p class="text-muted">Deleted files are kept for 30 minutes before permanent deletion</p>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn btn-danger" id="emptyBtn" onclick="emptyRecycleBin()">Empty Recycle Bin</button>
+                <button class="btn btn-outline" onclick="window.location.href='file_manager.html'">Back to Files</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <div id="recycleBinList"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/modules/api.js"></script>
+    <script src="../js/modules/toast.js"></script>
+    <script>
+        // Check authentication
+        const token = localStorage.getItem('token');
+        if (!token) {
+            window.location.href = '/';
+        }
+
+        // Load recycle bin on page load
+        loadRecycleBin();
+
+        // Auto-refresh every 10 seconds
+        setInterval(loadRecycleBin, 10000);
+
+        async function loadRecycleBin() {
+            const container = document.getElementById('recycleBinList');
+            const emptyBtn = document.getElementById('emptyBtn');
+            
+            try {
+                const response = await recycleBinAPI.list();
+                const files = response.data.files;
+
+                if (files.length === 0) {
+                    container.innerHTML = '<div class="text-center text-muted"><p>🎉 Recycle bin is empty</p></div>';
+                    emptyBtn.disabled = true;
+                    emptyBtn.style.opacity = '0.5';
+                    return;
+                }
+
+                emptyBtn.disabled = false;
+                emptyBtn.style.opacity = '1';
+
+                container.innerHTML = '';
+
+                files.forEach(file => {
+                    const deletedDate = new Date(file.deleted_at * 1000).toLocaleString();
+                    const size = formatBytes(file.size);
+                    const timeRemaining = formatTime(file.time_remaining);
+                    const progressPercent = (file.time_remaining / 1800) * 100;
+
+                    const card = document.createElement('div');
+                    card.className = 'file-card fade-in';
+                    card.innerHTML = `
+                        <div class="file-icon">🗑️</div>
+                        <div class="file-info" style="flex: 2;">
+                            <div class="file-name">${file.name}</div>
+                            <div class="file-meta">${size} • Deleted ${deletedDate}</div>
+                            <div style="margin-top: 8px;">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <div style="flex: 1; background: rgba(255,255,255,0.1); height: 6px; border-radius: 3px; overflow: hidden;">
+                                        <div style="width: ${progressPercent}%; height: 100%; background: linear-gradient(90deg, #ef4444, #f97316); transition: width 1s;"></div>
+                                    </div>
+                                    <span style="font-size: 0.875rem; color: ${file.time_remaining < 300 ? '#ef4444' : '#f97316'}; font-weight: 600;">
+                                        ⏱️ ${timeRemaining}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="file-actions">
+                            <button class="btn btn-sm btn-primary" onclick="restoreFile('${file.internal_name}', '${file.name}')">
+                                ♻️ Restore
+                            </button>
+                            <button class="btn btn-sm btn-danger" onclick="permanentlyDelete('${file.internal_name}', '${file.name}')">
+                                🗑️ Delete Forever
+                            </button>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+
+            } catch (error) {
+                container.innerHTML = `<div class="text-center text-danger"><p>Error loading recycle bin: ${error.message}</p></div>`;
+            }
+        }
+
+        async function restoreFile(internalName, displayName) {
+            if (!confirm(`Restore "${displayName}"?`)) return;
+
+            try {
+                await recycleBinAPI.restore(internalName);
+                showToast(`✅ "${displayName}" restored successfully`, 'success');
+                loadRecycleBin();
+            } catch (error) {
+                showToast(`❌ Failed to restore: ${error.message}`, 'error');
+            }
+        }
+
+        async function permanentlyDelete(internalName, displayName) {
+            if (!confirm(`Permanently delete "${displayName}"? This cannot be undone!`)) return;
+
+            try {
+                await recycleBinAPI.permanentlyDelete(internalName);
+                showToast(`✅ "${displayName}" permanently deleted`, 'success');
+                loadRecycleBin();
+            } catch (error) {
+                showToast(`❌ Failed to delete: ${error.message}`, 'error');
+            }
+        }
+
+        async function emptyRecycleBin() {
+            if (!confirm('Empty entire recycle bin? All files will be permanently deleted!')) return;
+
+            try {
+                await recycleBinAPI.empty();
+                showToast('✅ Recycle bin emptied', 'success');
+                loadRecycleBin();
+            } catch (error) {
+                showToast(`❌ Failed to empty: ${error.message}`, 'error');
+            }
+        }
+
+        function formatBytes(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        function formatTime(seconds) {
+            if (seconds < 60) {
+                return `${Math.floor(seconds)}s`;
+            } else {
+                const mins = Math.floor(seconds / 60);
+                const secs = Math.floor(seconds % 60);
+                return `${mins}m ${secs}s`;
+            }
+        }
+    </script>
+</body>
+</html>

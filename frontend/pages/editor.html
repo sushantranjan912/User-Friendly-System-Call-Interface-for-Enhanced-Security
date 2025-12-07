@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Editor - System Call Interface</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            overflow: hidden;
+        }
+
+        .editor-header {
+            height: 60px;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            box-shadow: var(--shadow-sm);
+            z-index: 10;
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .file-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .editor-container {
+            flex: 1;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #editorTextarea {
+            flex: 1;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-card);
+            color: #e0e0e0;
+            border: none;
+            padding: 20px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            resize: none;
+            outline: none;
+            tab-size: 4;
+        }
+
+        .status-bar {
+            height: 30px;
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            padding: 0 15px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            justify-content: space-between;
+        }
+
+        .unsaved-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background-color: var(--warning);
+            border-radius: 50%;
+            margin-left: 8px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .unsaved-indicator.visible {
+            opacity: 1;
+        }
+
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 20;
+            backdrop-filter: blur(2px);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="editor-header">
+        <div class="file-info">
+            <span id="fileIcon">✏️</span>
+            <span class="file-name" id="fileName">Loading...</span>
+            <span class="unsaved-indicator" id="unsavedIndicator" title="Unsaved changes"></span>
+        </div>
+        <div class="editor-actions flex-gap">
+            <button class="btn btn-primary btn-sm" id="saveBtn">Save Changes</button>
+            <button class="btn btn-outline btn-sm" onclick="window.close()">Close</button>
+        </div>
+    </div>
+
+    <div class="editor-container">
+        <textarea id="editorTextarea" spellcheck="false"></textarea>
+    </div>
+
+    <div class="status-bar">
+        <span id="editorStatus">Ready</span>
+        <span id="cursorPos">Ln 1, Col 1</span>
+    </div>
+
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+        <p style="margin-top: 10px; color: white;">Loading file...</p>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="../js/modules/api.js"></script>
+    <script src="../js/modules/ui.js"></script>
+    <script>
+        // Get file from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const filename = urlParams.get('file');
+        const textarea = document.getElementById('editorTextarea');
+        const saveBtn = document.getElementById('saveBtn');
+        const unsavedIndicator = document.getElementById('unsavedIndicator');
+        let originalContent = '';
+
+        if (!filename) {
+            showToast('No file specified', 'error');
+            document.getElementById('loadingOverlay').style.display = 'none';
+        } else {
+            document.getElementById('fileName').textContent = filename;
+            document.title = `${filename} - Editor`;
+            loadFile(filename);
+        }
+
+        // Track changes
+        textarea.addEventListener('input', () => {
+            const isDirty = textarea.value !== originalContent;
+            if (isDirty) {
+                unsavedIndicator.classList.add('visible');
+                document.getElementById('editorStatus').textContent = 'Unsaved changes';
+                document.title = `*${filename} - Editor`;
+            } else {
+                unsavedIndicator.classList.remove('visible');
+                document.getElementById('editorStatus').textContent = 'Ready';
+                document.title = `${filename} - Editor`;
+            }
+            updateCursorPos();
+        });
+
+        textarea.addEventListener('keyup', updateCursorPos);
+        textarea.addEventListener('click', updateCursorPos);
+
+        function updateCursorPos() {
+            const val = textarea.value;
+            const sel = textarea.selectionStart;
+            const lines = val.substr(0, sel).split('\n');
+            const lineNum = lines.length;
+            const colNum = lines[lines.length - 1].length + 1;
+            document.getElementById('cursorPos').textContent = `Ln ${lineNum}, Col ${colNum}`;
+        }
+
+        // Handle Tab key
+        textarea.addEventListener('keydown', function (e) {
+            if (e.key === 'Tab') {
+                e.preventDefault();
+                const start = this.selectionStart;
+                const end = this.selectionEnd;
+
+                // Insert 4 spaces
+                this.value = this.value.substring(0, start) +
+                    "    " + this.value.substring(end);
+
+                // Put caret at right position
+                this.selectionStart = this.selectionEnd = start + 4;
+
+                // Trigger input event
+                const event = new Event('input');
+                this.dispatchEvent(event);
+            }
+
+            // Save on Ctrl+S
+            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                e.preventDefault();
+                saveFile();
+            }
+        });
+
+        saveBtn.addEventListener('click', saveFile);
+
+        async function loadFile(filename) {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    window.location.href = '/';
+                    return;
+                }
+
+                const passcode = sessionStorage.getItem(`file_passcode_${filename}`);
+
+                // Use readFile API
+                const response = await fileManagerAPI.readFile(filename, passcode);
+
+                if (response.data.is_binary) {
+                    showToast('Cannot edit binary files in this editor.', 'error');
+                    textarea.value = "[Binary File Content cannot be edited here]";
+                    textarea.disabled = true;
+                    saveBtn.disabled = true;
+                } else {
+                    originalContent = response.data.content;
+                    textarea.value = originalContent;
+                }
+
+                document.getElementById('loadingOverlay').style.display = 'none';
+            } catch (error) {
+                showToast(error.message, 'error');
+                document.getElementById('loadingOverlay').style.display = 'none';
+            }
+        }
+
+        async function saveFile() {
+            try {
+                saveBtn.disabled = true;
+                saveBtn.textContent = 'Saving...';
+
+                const content = textarea.value;
+                const passcode = sessionStorage.getItem(`file_passcode_${filename}`);
+                await fileManagerAPI.updateFile(filename, content, passcode);
+
+                originalContent = content;
+                unsavedIndicator.classList.remove('visible');
+                document.getElementById('editorStatus').textContent = 'Saved successfully';
+                document.title = `${filename} - Editor`;
+                showToast('File saved successfully', 'success');
+
+                setTimeout(() => {
+                    document.getElementById('editorStatus').textContent = 'Ready';
+                }, 2000);
+            } catch (error) {
+                showToast(error.message, 'error');
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.textContent = 'Save Changes';
+            }
+        }
+    </script>
+</body>
+
+</html>

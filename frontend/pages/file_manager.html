@@ -1,0 +1,303 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Manager - System Call Interface</title>
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/components/navbar.css">
+    <link rel="stylesheet" href="../css/components/cards.css">
+    <link rel="stylesheet" href="../css/components/forms.css">
+    <link rel="stylesheet" href="../css/components/buttons.css">
+    <link rel="stylesheet" href="../css/layouts/grid.css">
+    <link rel="stylesheet" href="../css/layouts/responsive.css">
+    <link rel="stylesheet" href="../css/layouts/utilities.css">
+
+    <style>
+        .file-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-md);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-sm);
+            transition: all var(--transition-base);
+        }
+
+        .file-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-glow);
+            border-color: var(--primary-solid);
+        }
+
+        .file-icon {
+            font-size: 2rem;
+        }
+
+        .file-info {
+            flex: 1;
+        }
+
+        .file-name {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .file-meta {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .file-actions {
+            display: flex;
+            gap: var(--spacing-xs);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="/" class="navbar-brand">
+                ðŸ”’ SysCall Interface
+            </a>
+
+            <ul class="navbar-menu">
+                <li><a href="dashboard.html" class="navbar-link">Dashboard</a></li>
+                <li><a href="file_manager.html" class="navbar-link active">Files</a></li>
+                <li><a href="logs.html" class="navbar-link">Logs</a></li>
+            </ul>
+
+            <div class="navbar-user">
+                <div class="navbar-avatar" id="userAvatar">U</div>
+                <span id="userName">User</span>
+                <div class="navbar-dropdown">
+                    <a href="#" class="navbar-dropdown-item" id="logoutBtn">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main style="padding-top: 100px; min-height: 100vh;">
+        <div class="container">
+            <div class="flex-between mb-3">
+                <h2>File Manager</h2>
+                <div class="flex-gap">
+                    <div class="dropdown" style="position: relative;">
+                        <button class="btn btn-outline" onclick="toggleSortMenu()">Sort By ⬇️</button>
+                        <div id="sortMenu"
+                            style="display: none; position: absolute; top: 100%; right: 0; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); box-shadow: var(--shadow-lg); z-index: 100; min-width: 150px; margin-top: 5px;">
+                            <div onclick="sortFiles('name')"
+                                style="padding: 10px 15px; cursor: pointer; color: var(--text-primary); border-bottom: 1px solid var(--border-color);">
+                                Name</div>
+                            <div onclick="sortFiles('date')"
+                                style="padding: 10px 15px; cursor: pointer; color: var(--text-primary); border-bottom: 1px solid var(--border-color);">
+                                Date</div>
+                            <div onclick="sortFiles('size')"
+                                style="padding: 10px 15px; cursor: pointer; color: var(--text-primary);">Size</div>
+                        </div>
+                    </div>
+                    <button class="btn btn-outline" onclick="window.location.href='recycle_bin.html'">🗑️ Recycle
+                        Bin</button>
+                    <button class="btn btn-outline" id="refreshFiles">Refresh</button>
+                    <button class="btn btn-primary" onclick="openModal('uploadFileModal')">Upload</button>
+                    <button class="btn btn-primary" onclick="openModal('createFileModal')">New File</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <div id="fileList">
+                        <!-- Files will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Create File Modal -->
+    <div class="modal" id="createFileModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Create New File</h3>
+                <button class="modal-close" onclick="closeModal('createFileModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="createFileForm">
+                    <div class="form-group">
+                        <label class="form-label">Filename</label>
+                        <input type="text" class="form-input" id="newFilename" placeholder="example.txt" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Content</label>
+                        <textarea class="form-input" id="newFileContent" rows="5"
+                            placeholder="File content..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Create File</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upload File Modal -->
+    <div class="modal" id="uploadFileModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Upload File</h3>
+                <button class="modal-close" onclick="closeModal('uploadFileModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="uploadFileForm">
+                    <div class="form-group">
+                        <label class="form-label">Select File</label>
+                        <input type="file" class="form-input" id="uploadFileInput" required>
+                        <small class="text-muted">All file types supported</small>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Encryption</label>
+                        <select class="form-select" id="encryptionOption">
+                            <option value="none">No Encryption</option>
+                            <option value="encrypt">Encrypt File</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="passcodeGroup" style="display: none;">
+                        <label class="form-label">Passcode for Encryption</label>
+                        <input type="password" class="form-input" id="encryptionPasscode"
+                            placeholder="Enter passcode to encrypt file">
+                        <small class="text-muted">Remember this passcode - you'll need it to decrypt the file</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">AppLock (File Lock)</label>
+                        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                            <input type="checkbox" id="appLockOption"
+                                style="width: 18px; height: 18px; cursor: pointer;">
+                            <label for="appLockOption" style="cursor: pointer;">Enable AppLock</label>
+                        </div>
+                        <div id="appLockPasscodeGroup" style="display: none;">
+                            <input type="password" class="form-input" id="appLockPasscode"
+                                placeholder="Create a passcode for this file">
+                            <small class="text-muted">This passcode will be required to view, edit, download, or delete
+                                this file.</small>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label"> File Permissions</label>
+                        <div
+                            style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; padding: 1rem; background: var(--bg-secondary); border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                            <label
+                                style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; color: var(--text-secondary);">
+                                <input type="checkbox" id="permView" checked
+                                    style="cursor: pointer; width: 18px; height: 18px;">
+                                <span> Allow View</span>
+                            </label>
+                            <label
+                                style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; color: var(--text-secondary);">
+                                <input type="checkbox" id="permDownload" checked
+                                    style="cursor: pointer; width: 18px; height: 18px;">
+                                <span> Allow Download</span>
+                            </label>
+                            <label
+                                style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; color: var(--text-secondary);">
+                                <input type="checkbox" id="permEdit"
+                                    style="cursor: pointer; width: 18px; height: 18px;">
+                                <span> Allow Edit</span>
+                            </label>
+                            <label
+                                style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; color: var(--text-secondary);">
+                                <input type="checkbox" id="permDelete"
+                                    style="cursor: pointer; width: 18px; height: 18px;">
+                                <span> Allow Delete</span>
+                            </label>
+                        </div>
+                        <small class="text-muted"> Select which operations others can perform on this file</small>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">Upload File</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- View File Modal -->
+    <div class="modal" id="viewFileModal">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h3 class="modal-title" id="viewFileTitle">File Content</h3>
+                <button class="modal-close" onclick="closeModal('viewFileModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <pre id="viewFileContent"
+                    style="background: var(--bg-secondary); padding: 1rem; border-radius: 0.5rem; overflow: auto; max-height: 400px;"></pre>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit File Modal -->
+    <div class="modal" id="editFileModal">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h3 class="modal-title">Edit File</h3>
+                <button class="modal-close" onclick="closeModal('editFileModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Filename</label>
+                    <input type="text" class="form-input" id="editFilename" readonly>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Content</label>
+                    <textarea class="form-input" id="editFileContent" rows="10"></textarea>
+                </div>
+                <button class="btn btn-primary w-100" id="saveFileBtn">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Unlock File Modal -->
+    <div class="modal" id="unlockFileModal">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+                <h3 class="modal-title">🔐 File Locked</h3>
+                <button class="modal-close" onclick="closeModal('unlockFileModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-3">This file is protected by AppLock. Please enter the passcode to proceed.</p>
+                <div class="form-group">
+                    <input type="password" class="form-input" id="unlockPasscode" placeholder="Enter passcode"
+                        autofocus>
+                </div>
+                <button class="btn btn-primary w-100" id="unlockBtn">Unlock</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Scripts -->
+    <script src="../js/modules/api.js"></script>
+    <script src="../js/modules/auth.js"></script>
+    <script src="../js/modules/ui.js"></script>
+    <script src="../js/modules/file_manager.js"></script>
+    <script>
+        // Check authentication
+        if (!isAuthenticated()) {
+            window.location.href = '/';
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadUserInfo();
+        });
+    </script>
+</body>
+
+</html>

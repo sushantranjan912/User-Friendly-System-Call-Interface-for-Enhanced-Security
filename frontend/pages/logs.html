@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audit Logs - System Call Interface</title>
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/components/navbar.css">
+    <link rel="stylesheet" href="../css/components/cards.css">
+    <link rel="stylesheet" href="../css/components/forms.css">
+    <link rel="stylesheet" href="../css/components/buttons.css">
+    <link rel="stylesheet" href="../css/layouts/grid.css">
+    <link rel="stylesheet" href="../css/layouts/responsive.css">
+    <link rel="stylesheet" href="../css/layouts/utilities.css">
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="/" class="navbar-brand">
+                🔒 SysCall Interface
+            </a>
+
+            <ul class="navbar-menu">
+                <li><a href="dashboard.html" class="navbar-link">Dashboard</a></li>
+                <li><a href="file_manager.html" class="navbar-link">Files</a></li>
+                <li><a href="logs.html" class="navbar-link active">Logs</a></li>
+            </ul>
+
+            <div class="navbar-user" style="position: relative;">
+                <div class="navbar-avatar" id="userAvatar">U</div>
+                <span id="userName">User</span>
+                <div class="navbar-dropdown">
+                    <a href="#" class="navbar-dropdown-item" id="logoutBtn">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main style="padding-top: 100px; min-height: 100vh;">
+        <div class="container">
+            <div class="card fade-in">
+                <div class="card-header">
+                    <h3 class="card-title">Audit Logs</h3>
+                    <div class="flex" style="gap: var(--spacing-sm);">
+                        <button class="btn btn-ghost btn-sm" id="refreshLogs">Refresh</button>
+                        <button class="btn btn-primary btn-sm" id="exportLogs">Export</button>
+                    </div>
+                </div>
+
+                <!-- Filters -->
+                <div class="card-body">
+                    <div class="grid-3 mb-2">
+                        <div class="form-group">
+                            <label class="form-label">Action Type</label>
+                            <select class="form-select" id="filterActionType">
+                                <option value="">All Actions</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Status</label>
+                            <select class="form-select" id="filterStatus">
+                                <option value="">All Status</option>
+                                <option value="success">Success</option>
+                                <option value="failure">Failure</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Limit</label>
+                            <select class="form-select" id="filterLimit">
+                                <option value="50">50 logs</option>
+                                <option value="100" selected>100 logs</option>
+                                <option value="200">200 logs</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-secondary" id="applyFilters">Apply Filters</button>
+                </div>
+
+                <!-- Logs Table -->
+                <div class="card-body">
+                    <div class="scrollable-lg">
+                        <table class="table" id="logsTable">
+                            <thead>
+                                <tr>
+                                    <th>Time</th>
+                                    <th>User</th>
+                                    <th>Action</th>
+                                    <th>Status</th>
+                                    <th>IP Address</th>
+                                    <th>Details</th>
+                                </tr>
+                            </thead>
+                            <tbody id="logsTableBody">
+                                <tr>
+                                    <td colspan="6" class="text-center">
+                                        <div class="spinner" style="margin: var(--spacing-md) auto;"></div>
+                                        <p>Loading logs...</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Scripts -->
+    <script src="../js/modules/api.js"></script>
+    <script src="../js/modules/auth.js"></script>
+    <script src="../js/modules/ui.js"></script>
+    <script src="../js/modules/logs.js"></script>
+    <script>
+        // Check authentication
+        if (!isAuthenticated()) {
+            window.location.href = '/';
+        }
+
+        // Initialize logs page
+        document.addEventListener('DOMContentLoaded', () => {
+            loadUserInfo();
+            loadLogTypes();
+            loadLogs();
+        });
+    </script>
+</body>
+
+</html>

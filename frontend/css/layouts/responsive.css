@@ -1,0 +1,103 @@
+/* ===== RESPONSIVE DESIGN ===== */
+
+/* Mobile First Approach */
+@media (max-width: 480px) {
+    :root {
+        --spacing-sm: 0.75rem;
+        --spacing-md: 1rem;
+        --spacing-lg: 1.5rem;
+        --spacing-xl: 2rem;
+    }
+
+    .container {
+        padding: 0 var(--spacing-sm);
+    }
+
+    h1 {
+        font-size: 2rem;
+    }
+
+    h2 {
+        font-size: 1.5rem;
+    }
+
+    h3 {
+        font-size: 1.25rem;
+    }
+}
+
+/* Tablet */
+@media (min-width: 768px) and (max-width: 1024px) {
+    .container {
+        max-width: 720px;
+    }
+}
+
+/* Desktop */
+@media (min-width: 1024px) {
+    .container {
+        max-width: 960px;
+    }
+}
+
+/* Large Desktop */
+@media (min-width: 1200px) {
+    .container {
+        max-width: 1140px;
+    }
+}
+
+/* Utility Classes for Responsive Display */
+.mobile-only {
+    display: block;
+}
+
+.tablet-only,
+.desktop-only {
+    display: none;
+}
+
+@media (min-width: 768px) {
+    .mobile-only {
+        display: none;
+    }
+
+    .tablet-only {
+        display: block;
+    }
+}
+
+@media (min-width: 1024px) {
+    .tablet-only {
+        display: none;
+    }
+
+    .desktop-only {
+        display: block;
+    }
+}
+
+/* Responsive Text Alignment */
+@media (max-width: 768px) {
+    .text-center-mobile {
+        text-align: center;
+    }
+}
+
+/* Responsive Padding */
+.section {
+    padding: var(--spacing-xl) 0;
+}
+
+@media (max-width: 768px) {
+    .section {
+        padding: var(--spacing-lg) 0;
+    }
+}
+
+/* Responsive Flex Direction */
+@media (max-width: 768px) {
+    .flex-mobile-column {
+        flex-direction: column;
+    }
+}

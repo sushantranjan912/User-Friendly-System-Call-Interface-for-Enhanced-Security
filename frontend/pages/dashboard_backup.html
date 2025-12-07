@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - System Call Interface</title>
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/animations.css">
+    <link rel="stylesheet" href="../css/components/navbar.css">
+    <link rel="stylesheet" href="../css/components/cards.css">
+    <link rel="stylesheet" href="../css/components/forms.css">
+    <link rel="stylesheet" href="../css/components/buttons.css">
+    <link rel="stylesheet" href="../css/layouts/grid.css">
+    <link rel="stylesheet" href="../css/layouts/responsive.css">
+    <link rel="stylesheet" href="../css/layouts/utilities.css">
+</head>
+
+<body>
+    <!-- Morphing Blob Backgrounds -->
+    <div class="blob-bg"></div>
+    <div class="blob-bg"></div>
+    <div class="blob-bg"></div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="/" class="navbar-brand neon-text">
+                🔒 SysCall Interface
+            </a>
+
+            <ul class="navbar-menu">
+                <li><a href="dashboard.html" class="navbar-link active">Dashboard</a></li>
+                <li><a href="file_manager.html" class="navbar-link">Files</a></li>
+                <li><a href="logs.html" class="navbar-link">Logs</a></li>
+            </ul>
+
+            <div class="navbar-user" style="position: relative;">
+                <div class="navbar-avatar" id="userAvatar">U</div>
+                <span id="userName">User</span>
+                <div class="navbar-dropdown">
+                    <a href="#" class="navbar-dropdown-item" id="logoutBtn">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main style="padding-top: 100px; min-height: 100vh;">
+        <div class="container">
+            <!-- Stats Cards -->
+            <div class="grid-4 mb-3">
+                <div class="stat-card fade-in neon-box ripple">
+                    <div class="stat-value holographic" id="totalCommands">0</div>
+                    <div class="stat-label">Total Commands</div>
+                </div>
+                <div class="stat-card fade-in neon-box ripple" style="animation-delay: 0.1s;">
+                    <div class="stat-value holographic" id="successfulCommands">0</div>
+                    <div class="stat-label">Successful</div>
+                </div>
+                <div class="stat-card fade-in neon-box ripple" style="animation-delay: 0.2s;">
+                    <div class="stat-value holographic" id="failedCommands">0</div>
+                    <div class="stat-label">Failed</div>
+                </div>
+                <div class="stat-card fade-in neon-box ripple" style="animation-delay: 0.3s;">
+                    <div class="stat-value holographic" id="recentCommands">0</div>
+                    <div class="stat-label">Last 24h</div>
+                </div>
+            </div>
+
+            <!-- Main Grid -->
+            <div class="grid-2">
+                <!-- Command Execution -->
+                <div class="card col-span-2 fade-in glow-border card-3d">
+                    <div class="card-header">
+                        <h3 class="card-title holographic">Execute System Call</h3>
+                        <button class="btn btn-ghost btn-sm ripple" id="showAllowedCommands">Allowed Commands</button>
+                    </div>
+                    <div class="card-body">
+                        <form id="commandForm">
+                            <div class="form-group">
+                                <label class="form-label">Command</label>
+                                <input type="text" class="form-input" id="commandInput"
+                                    placeholder="Enter command (e.g., ls, dir, whoami)" required>
+                                <small class="text-muted">Only whitelisted commands are allowed</small>
+                            </div>
+                            <button type="submit" class="btn btn-primary ripple" id="executeBtn">
+                                Execute Command
+                            </button>
+                        </form>
+
+                        <!-- Command Output -->
+                        <div id="commandOutput" class="hidden" style="margin-top: var(--spacing-md);">
+                            <div class="divider"></div>
+                            <h4>Output:</h4>
+                            <pre id="outputContent" class="scan-line"
+                                style="background: var(--bg-secondary); padding: var(--spacing-md); border-radius: var(--radius-md); overflow-x: auto; max-height: 300px; overflow-y: auto;"></pre>
+                            <div class="flex-between" style="margin-top: var(--spacing-sm);">
+                                <span class="badge" id="outputStatus">Success</span>
+                                <span class="text-muted" id="outputTime"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Command History -->
+                <div class="card col-span-2 fade-in glow-border card-3d" style="animation-delay: 0.2s;">
+                    <div class="card-header">
+                        <h3 class="card-title holographic">Recent Commands</h3>
+                        <button class="btn btn-ghost btn-sm ripple" id="refreshHistory">Refresh</button>
+                    </div>
+                    <div class="card-body">
+                        <div class="scrollable shimmer" id="historyContainer">
+                            <div class="text-center text-muted" id="historyLoading">
+                                <div class="spinner" style="margin: var(--spacing-md) auto;"></div>
+                                <p>Loading history...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Allowed Commands Modal -->
+    <div class="modal" id="allowedCommandsModal">
+        <div class="modal-content glow-border">
+            <div class="modal-header">
+                <h3 class="modal-title holographic">Allowed Commands</h3>
+                <button class="modal-close ripple" id="closeAllowedCommands">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p class="text-secondary mb-2">The following commands are whitelisted for execution:</p>
+                <div id="allowedCommandsList" class="grid-2">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Scripts -->
+    <script src="../js/modules/api.js"></script>
+    <script src="../js/modules/auth.js"></script>
+    <script src="../js/modules/ui.js"></script>
+    <script src="../js/modules/system_calls.js"></script>
+    <script>
+        // Check authentication
+        if (!isAuthenticated()) {
+            window.location.href = '/';
+        }
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', () => {
+            loadUserInfo();
+            loadStats();
+            loadHistory();
+            loadAllowedCommands();
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,65 @@
+<!-- Upload File Modal -->
+<div class="modal" id="uploadFileModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">Upload File</h3>
+            <button class="modal-close" onclick="closeModal('uploadFileModal')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="uploadFileForm">
+                <div class="form-group">
+                    <label class="form-label">Select File</label>
+                    <input type="file" class="form-input" id="uploadFileInput" required>
+                    <small class="text-muted">All file types supported</small>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Encryption</label>
+                    <select class="form-select" id="encryptionOption">
+                        <option value="none">No Encryption</option>
+                        <option value="encrypt">Encrypt File</option>
+                    </select>
+                </div>
+
+                <div class="form-group" id="passcodeGroup" style="display: none;">
+                    <label class="form-label">Passcode for Encryption</label>
+                    <input type="password" class="form-input" id="encryptionPasscode"
+                        placeholder="Enter passcode to encrypt file">
+                    <small class="text-muted">Remember this passcode - you'll need it to decrypt the file</small>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">📋 File Permissions</label>
+                    <div
+                        style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; padding: 1rem; background: var(--bg-secondary); border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                        <label
+                            style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; color: var(--text-secondary);">
+                            <input type="checkbox" id="permView" checked
+                                style="cursor: pointer; width: 18px; height: 18px;">
+                            <span>👁️ Allow View</span>
+                        </label>
+                        <label
+                            style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; color: var(--text-secondary);">
+                            <input type="checkbox" id="permDownload" checked
+                                style="cursor: pointer; width: 18px; height: 18px;">
+                            <span>⬇️ Allow Download</span>
+                        </label>
+                        <label
+                            style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; color: var(--text-secondary);">
+                            <input type="checkbox" id="permEdit" style="cursor: pointer; width: 18px; height: 18px;">
+                            <span>✏️ Allow Edit</span>
+                        </label>
+                        <label
+                            style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; color: var(--text-secondary);">
+                            <input type="checkbox" id="permDelete" style="cursor: pointer; width: 18px; height: 18px;">
+                            <span>🗑️ Allow Delete</span>
+                        </label>
+                    </div>
+                    <small class="text-muted">⚠️ Select which operations others can perform on this file</small>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100">Upload File</button>
+            </form>
+        </div>
+    </div>
+</div>

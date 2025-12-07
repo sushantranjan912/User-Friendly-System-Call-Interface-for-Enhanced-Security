@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Manager - System Call Interface</title>
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/components/navbar.css">
+    <link rel="stylesheet" href="../css/components/cards.css">
+    <link rel="stylesheet" href="../css/components/forms.css">
+    <link rel="stylesheet" href="../css/components/buttons.css">
+    <link rel="stylesheet" href="../css/layouts/grid.css">
+    <link rel="stylesheet" href="../css/layouts/responsive.css">
+    <link rel="stylesheet" href="../css/layouts/utilities.css">
+
+    <style>
+        .file-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-md);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .file-icon {
+            font-size: 2rem;
+        }
+
+        .file-info {
+            flex: 1;
+        }
+
+        .file-name {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .file-meta {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .file-actions {
+            display: flex;
+            gap: var(--spacing-xs);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="/" class="navbar-brand">
+                🔒 SysCall Interface
+            </a>
+
+            <ul class="navbar-menu">
+                <li><a href="dashboard.html" class="navbar-link">Dashboard</a></li>
+                <li><a href="file_manager.html" class="navbar-link active">Files</a></li>
+                <li><a href="logs.html" class="navbar-link">Logs</a></li>
+            </ul>
+
+            <div class="navbar-user">
+                <div class="navbar-avatar" id="userAvatar">U</div>
+                <span id="userName">User</span>
+                <div class="navbar-dropdown">
+                    <a href="#" class="navbar-dropdown-item" id="logoutBtn">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main style="padding-top: 100px; min-height: 100vh;">
+        <div class="container">
+            <div class="flex-between mb-3">
+                <h2>File Manager</h2>
+                <div class="flex-gap">
+                    <button class="btn btn-outline" id="refreshFiles">Refresh</button>
+                    <button class="btn btn-primary" onclick="openModal('uploadFileModal')">Upload</button>
+                    <button class="btn btn-primary" onclick="openModal('createFileModal')">New File</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <div id="fileList">
+                        <!-- Files will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Create File Modal -->
+    <div class="modal" id="createFileModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Create New File</h3>
+                <button class="modal-close" onclick="closeModal('createFileModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="createFileForm">
+                    <div class="form-group">
+                        <label class="form-label">Filename</label>
+                        <input type="text" class="form-input" id="newFilename" placeholder="example.txt" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Content</label>
+                        <textarea class="form-input" id="newFileContent" rows="5"
+                            placeholder="File content..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Create File</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upload File Modal -->
+    <div class="modal" id="uploadFileModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Upload File</h3>
+                <button class="modal-close" onclick="closeModal('uploadFileModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="uploadFileForm">
+                    <div class="form-group">
+                        <label class="form-label">Select File</label>
+                        <input type="file" class="form-input" id="uploadFileInput" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Upload</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- View File Modal -->
+    <div class="modal" id="viewFileModal">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h3 class="modal-title" id="viewFileTitle">File Content</h3>
+                <button class="modal-close" onclick="closeModal('viewFileModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <pre id="viewFileContent"
+                    style="background: var(--bg-secondary); padding: 1rem; border-radius: 0.5rem; overflow: auto; max-height: 400px;"></pre>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit File Modal -->
+    <div class="modal" id="editFileModal">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h3 class="modal-title">Edit File</h3>
+                <button class="modal-close" onclick="closeModal('editFileModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Filename</label>
+                    <input type="text" class="form-input" id="editFilename" readonly>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Content</label>
+                    <textarea class="form-input" id="editFileContent" rows="10"></textarea>
+                </div>
+                <button class="btn btn-primary w-100" id="saveFileBtn">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Scripts -->
+    <script src="../js/modules/api.js"></script>
+    <script src="../js/modules/auth.js"></script>
+    <script src="../js/modules/ui.js"></script>
+    <script src="../js/modules/file_manager.js"></script>
+    <script>
+        // Check authentication
+        if (!isAuthenticated()) {
+            window.location.href = '/';
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadUserInfo();
+        });
+    </script>
+</body>
+
+</html>
