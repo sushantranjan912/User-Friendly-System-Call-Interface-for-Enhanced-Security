@@ -1,0 +1,40 @@
+{
+  "1765110168_New_Text_Document.txt": {
+    "original_name": "New_Text_Document.txt",
+    "deleted_at": 1765110168,
+    "deleted_by": "sushant",
+    "permissions": {
+      "view": true,
+      "download": true,
+      "edit": true,
+      "delete": true,
+      "owner": 1
+    }
+  },
+  "1765110933_unit_1_part_1.pdf": {
+    "original_name": "unit_1_part_1.pdf",
+    "deleted_at": 1765110933,
+    "deleted_by": "bittu",
+    "permissions": {
+      "view": true,
+      "download": true,
+      "edit": true,
+      "delete": true,
+      "owner": 4
+    }
+  },
+  "1765112973_WhatsApp_Image_2025-12-07_at_4.56.33_PM.jpeg": {
+    "original_name": "WhatsApp_Image_2025-12-07_at_4.56.33_PM.jpeg",
+    "deleted_at": 1765112973,
+    "deleted_by": "ankit",
+    "permissions": {
+      "view": true,
+      "download": true,
+      "edit": true,
+      "delete": true,
+      "owner": 4,
+      "is_locked": true,
+      "lock_hash": "scrypt:32768:8:1$ot6TZLr9uHcs385A$cf4689de16466895cffcdedfd3e48354ac49e0664dd638529de7cfcf344a0a9b778d87b8174da329f16ab0c8c5efe48cbdffbe6fe59a4b67b180d0e3936c4af3"
+    }
+  }
+}

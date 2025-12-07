@@ -1,0 +1,76 @@
+{
+  "deepseek_html_20251201_06f685_1.html": {
+    "view": true,
+    "download": true,
+    "edit": false,
+    "delete": false,
+    "owner": 3
+  },
+  "deepseek_html_20251128_b5619e.html": {
+    "view": true,
+    "download": false,
+    "edit": false,
+    "delete": false,
+    "owner": 3
+  },
+  "CA_03_of_CSE111_Portfolio_format_11.docx": {
+    "view": true,
+    "download": true,
+    "edit": true,
+    "delete": false,
+    "owner": 5
+  },
+  "Allocation_Criterion.pdf.enc": {
+    "view": true,
+    "download": false,
+    "edit": false,
+    "delete": false,
+    "owner": 1
+  },
+  "Allocation_Criterion.pdf": {
+    "view": true,
+    "download": false,
+    "edit": false,
+    "delete": false,
+    "owner": 1
+  },
+  "Screenshot_3.png": {
+    "view": false,
+    "download": true,
+    "edit": false,
+    "delete": false,
+    "owner": 2
+  },
+  "Screenshot_100.png": {
+    "view": true,
+    "download": true,
+    "edit": false,
+    "delete": false,
+    "owner": 1
+  },
+  "test_delete_1765110034.txt": {
+    "view": true,
+    "download": true,
+    "edit": false,
+    "delete": false,
+    "owner": null
+  },
+  "WhatsApp_Image_2025-12-07_at_5.54.21_PM.jpeg": {
+    "view": true,
+    "download": true,
+    "edit": true,
+    "delete": false,
+    "owner": 4,
+    "is_locked": false,
+    "lock_hash": null
+  },
+  "EngineeringMinorAllocationCriterion.pdf": {
+    "view": true,
+    "download": true,
+    "edit": true,
+    "delete": false,
+    "owner": 1,
+    "is_locked": true,
+    "lock_hash": "scrypt:32768:8:1$XsDY4VRpdqPSsslP$f4562ab2561aa16b68af0e9874a545f3731cf358e8f2bcc85480349e39445b27371cc302474fd3feb67e4fc2f1b48e7214d677faac29fc51dc5174e53aad18d2"
+  }
+}
