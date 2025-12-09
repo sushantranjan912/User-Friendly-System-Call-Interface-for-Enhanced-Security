@@ -1,146 +1,161 @@
-🚀 Secure System Call Interface (Enhanced Security File Manager)
+# 🛡️ User-Friendly System Call Interface for Enhanced Security
 
-A modern web-based system designed to securely execute system-level operations, manage files, monitor real-time logs, and enforce access control using a layered security architecture.
+[![GitHub stars](https://img.shields.io/github/stars/sushantranjan912/User-Friendly-System-Call-Interface-for-Enhanced-Security.svg?style=social)](https://github.com/sushantranjan912/User-Friendly-System-Call-Interface-for-Enhanced-Security/stargazers)  
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-🔥 Key Features
-🔐 Secure Authentication
+## 🔎 Project Overview
 
-Login with token-based security
+Secure System Call Interface (Enhanced Security File Manager) is a web-based platform designed to **perform system-level operations safely** (like file management and process execution) via a controlled interface — with **authentication, role-based authorization, encryption, and comprehensive logging**.  
+It acts as a “gateway” for system calls, ensuring unauthorized or malicious operations are prevented, and all activity is auditable.
 
-AppLock (file-level passcode protection)
+**Why this project matters:**
 
-Safe user session handling
+- Most native system calls expose powerful operations — misuse could compromise the system.  
+- This interface restricts those operations to authorized users only.  
+- Detailed logs + audit trails + optional analytics help administrators monitor usage and detect suspicious behavior.  
 
-🛡 Authorization (RBAC)
+---
 
-Role-based access control
+## 🚀 Demo / Quick Start
 
-Permissions: View, Download, Edit, Delete
+```bash
+# 1. Clone the repository
+git clone https://github.com/sushantranjan912/User-Friendly-System-Call-Interface-for-Enhanced-Security.git
+cd User-Friendly-System-Call-Interface-for-Enhanced-Security
 
-Admin vs Normal User privilege separation
+# 2. Setup virtual environment (for backend)
+python3 -m venv venv
+source venv/bin/activate   # Windows: venv\Scripts\activate
 
-⚙️ Protected System Call Interface
+# 3. Install dependencies
+pip install -r requirements.txt
 
-Safe execution of OS-level operations
+# 4. Run the backend
+cd backend
+uvicorn main:app --reload
 
-Input validation & sanitization
+# 5. Open frontend in browser
+# (Open index.html or as per frontend docs; or start frontend server if configured)
+```
 
-Prevents unauthorized or harmful system calls
 
-📁 Advanced File Manager
+📁 What’s Inside: Modules & Features
 
-Upload, View, Edit, Download, Delete
+| Module / Component                   | Responsibilities / Features                                                                                                     |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------- |
+| **Authentication & Auth Layer**      | Secure login, token-based sessions, role-based access control (RBAC)                                                            |
+| **Protected System Call Interface**  | Safe wrappers for file operations, process/network calls; input sanitization; permission enforcement                            |
+| **File Manager + Encryption**        | Upload / Download / Edit / Delete / Recycle-Bin for files, AES-256 encryption support, optional file passcode locking           |
+| **Audit Logging**                    | Detailed logging of every action — user, timestamp, operation, parameters, status, IP/client info                               |
+| **Security Dashboard / Admin Panel** | Stats & metrics: total files, encrypted files, active users, unauthorized attempts; real-time logs; system-call activity charts |
+| **Future-ready hooks**               | Designed for optional modules like anomaly detection, MFA, firewall / rate-limiting, version history, alerts                    |
 
-AES-256 Encryption support
 
-Locked files with passcode
+💡 Key Features
 
-File metadata display
+🔐 Secure Authentication — login with tokens, role-based permission; separation between admin and normal users.
 
-🗑 Recycle Bin
+🗄️ Advanced File Management — upload, edit, download, delete; encrypted storage; file-level locking and recycle bin with restore.
 
-Deleted files stored temporarily
+⚙️ Controlled System Calls — OS-level operations executed only through validated, sanitized requests.
 
-30-minute countdown before permanent deletion
+📜 Full Audit Logs — every system call and user action logged with details (user, time, parameters, result).
 
-Restore / Delete Forever options
+📊 Admin Dashboard — view system activity, file stats, unauthorized attempts, real-time logs, and activity graphs.
 
-📊 Security Dashboard
 
-Total Files
+🛠️ Tech Stack
+Layer	Technologies / Tools
+Frontend	HTML, CSS, JavaScript (modern UI)
+Backend	Python (Flask / FastAPI)
+System Layer	C or system-level wrappers (for low-level calls) + Python bridging
+Security	JWT authentication, AES-256 encryption, Role-Based Access Control (RBAC)
+Storage / Logs	SQLite or secure flat-file / database
+Dependencies	See requirements.txt
 
-Encrypted Files
 
-Active Users
+🧱 Project Structure
+```
+/
+├── backend/           # API server, authentication, syscall interface
+├── frontend/          # Web UI (file manager, dashboard)
+├── database/          # DB or storage setup
+├── docs/              # Documentation, design notes
+├── README.md          # ← You are here
+└── requirements.txt   # Python (and other) dependencies
+```
 
-Unauthorized Actions
 
-System Call Activity Graph
+🧭 Installation & Usage
 
-File Security Snapshot (100% Secure)
+Clone & setup
 
-🧾 Audit Logs (Real-Time)
+git clone https://github.com/sushantranjan912/User-Friendly-System-Call-Interface-for-Enhanced-Security.git
+cd User-Friendly-System-Call-Interface-for-Enhanced-Security
+python -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
 
-Logs file uploads, deletions, edits, downloads
 
-Tracks login events
+Configure settings
 
-Shows IP address, timestamp, status, details
+(Optional) Update configuration — e.g., encryption keys, database path, role permissions, etc.
 
-Export logs for analysis
+Run the backend API
 
-🛠 Tech Stack
-Frontend
+cd backend
+uvicorn main:app --reload
 
-HTML, CSS, JavaScript
 
-Modern dark UI
+Launch frontend
 
-Backend
+Either open frontend/index.html in browser or start frontend development server (if configured).
 
-Python (Flask API)
+Admin or user login, then perform permitted operations (file upload / download / view logs) as per your role.
 
-C (Low-level system call layer)
+Admin Dashboard
 
-Security
+Use admin credentials to view dashboard: system logs, file stats, unauthorized attempts, activity graphs, etc.
 
-JWT Authentication
 
-AES-256 Encryption
+🧑‍💻 How to Contribute
 
-RBAC Permission Model
+Contributions, improvements, bug-fixes, and documentation enhancements are welcome!
 
-AppLock File Protection
+Fork the repository
 
-Database / Storage
+Create a new branch (git checkout -b feature/my-feature)
 
-SQLite or secure flat-file logging
+Make changes & add tests as needed
 
-📁 Project Modules
-1. Authentication Module
+Submit a Pull Request — please describe your changes and rationale
 
-Validates login
 
-Generates secure tokens
+📄 License
 
-2. Authorization & Security
+This project is licensed under the MIT License. See the LICENSE
+ file for details.
 
-Role-based access
 
-Permission enforcement
+🙋 Author / Maintainer
 
-3. System Call Interface
+rajaman85, sushantranjan912, bittusingh14 — we’re the original authors. Thanks for building and sharing this!
 
-Validates syscall request
 
-Executes safely using C/Python
+🔮 Future Roadmap & Enhancements
 
-4. File Manager
+🛡️ Multi-Factor Authentication (MFA)
 
-Upload/Edit/Delete/Download
+🤖 ML-based Anomaly Detection & Alerting for suspicious usage patterns
 
-Encryption & Locking
+🔔 Real-time Alerts (email / SMS) for security events
 
-5. Recycle Bin
+📂 Version history for files
 
-Temporary storage
+🛑 Firewall / Rate-limiting on system calls
 
-Auto-expiry countdown
+🔄 More OS-level operations (network, process management, etc.)
 
-6. Audit Logging
+“A well-documented project is the first step toward collaboration and trust.”
 
-Tracks all system activities
-
-Helps in monitoring & debugging
-
-🔮 Future Enhancements
-
-Multi-Factor Authentication (MFA)
-
-AI-based anomaly detection
-
-Email/SMS alerts for suspicious activity
-
-Version history for each file
-
-Advanced firewall & rate limiting
+Thanks for checking out this project — feel free to ⭐ the repo if you like it!
