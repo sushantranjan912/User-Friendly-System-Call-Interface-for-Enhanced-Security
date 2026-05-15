@@ -2,6 +2,20 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 :root {
+    /* Light theme variables */ 
+    .light-theme {
+    --bg-primary: #f8fafc;
+    --bg-secondary: rgba(255, 255, 255, 0.8);
+    --bg-card: rgba(255, 255, 255, 0.7);
+    --bg-card-hover: rgba(255, 255, 255, 0.9);
+
+    --text-primary: #111827;
+    --text-secondary: #374151;
+    --text-muted: #6b7280;
+
+    --glass-bg: rgba(255, 255, 255, 0.6);
+    --glass-border: rgba(0, 0, 0, 0.08);
+}
     /* Modern Dark Blue Color Scheme */
     --primary: #2563eb;
     --primary-dark: #1e40af;
