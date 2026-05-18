@@ -7,6 +7,7 @@
     <title>Secure System Call Interface - Enterprise Security</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/components/buttons.css">
+    
     <style>
         /* Modern Landing Page with Dark Theme */
         * {
@@ -436,7 +437,7 @@
 
                 <div class="hero-buttons">
                     <button class="btn btn-primary" id="heroGetStarted">Get Started Free</button>
-                    <button class="btn btn-secondary">Learn More</button>
+                    <button class="btn btn-secondary" id="learnMoreBtn">Learn More</button>
                 </div>
             </div>
             
@@ -493,6 +494,43 @@
             </div>
         </div>
     </section>
+    <!-- About Section -->
+    <section class="about-section" id="about">
+        <div class="about-container">
+            <h2 class="section-title">About SysCall</h2>
+            <p class="about-text">
+            Secure System Call Interface is a web-based platform that provides enhanced security in system level operations such as file management and process execution. 
+            It facilitates a controlled interface with features such as proper authentication, authorization and encryption. 
+            Additionally, it also helps in comprehensive audit logging. 
+            In a nutshell, it acts as a 'gateway' for system calls and prevents any malicious operations by restricting unauthorized access.
+            </p>
+        </div>
+    </section>
+
+    <!-- Learn More Modal -->
+    <div class="modal" id="learnMoreModal">
+        <div class="modal-content">
+            <button class="modal-close" id="closeLearnMore">
+                &times;
+            </button>
+            <h2 class="modal-title">
+                About Secure System Call Interface (SysCall)
+            </h2>
+            <p class="about-text">
+                Secure System Call Interface is a web-based platform facilitates enhanced security in system level operations such as file management and process execution via a controlled interface with features such as proper authentication, authorization and encryption. 
+                It allows real time monitoring 24/7 and comprehensive audit logging. 
+                Its primary features include:
+            </p>
+            <br>
+            <ul class="learn-list">
+                <li>🔐 Secure authentication</li>
+                <li>⚡ Fast execution</li>
+                <li>📊 Audit logging</li>
+                <li>🛡 Role based access</li>
+                <li>📈 Monitoring support</li>
+            </ul>
+        </div>
+    </div>
 
     <!-- Login Modal -->
     <div class="modal" id="loginModal">
@@ -555,6 +593,7 @@
         // Modal handlers
         const loginModal = document.getElementById('loginModal');
         const registerModal = document.getElementById('registerModal');
+        const learnMoreModal = document.getElementById('learnMoreModal');
 
         document.getElementById('loginBtn').addEventListener('click', (e) => {
             e.preventDefault();
@@ -569,12 +608,20 @@
             registerModal.classList.add('active');
         });
 
+        document.getElementById('learnMoreBtn').addEventListener('click', () => {
+            learnMoreModal.classList.add('active');
+        });
+
         document.getElementById('closeLogin').addEventListener('click', () => {
             loginModal.classList.remove('active');
         });
 
         document.getElementById('closeRegister').addEventListener('click', () => {
             registerModal.classList.remove('active');
+        });
+
+        document.getElementById('closeLearnMore').addEventListener('click', () => {
+            learnMoreModal.classList.remove('active');
         });
 
         // Login form
@@ -631,6 +678,13 @@
                 registerModal.classList.remove('active');
             }
         });
+
+        learnMoreModal.addEventListener('click', (e) => {
+            if (e.target === learnMoreModal) {
+                learnMoreModal.classList.remove('active');
+            }
+        });
+
     </script>
 </body>
 

@@ -68,6 +68,7 @@ body {
     color: var(--text-primary);
     line-height: 1.6;
     overflow-x: hidden;
+    scroll-behavior: smooth;
     position: relative;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -142,6 +143,20 @@ body::after {
     padding: 0 var(--spacing-lg);
 }
 
+/* About Section */
+.about-text {
+    color:#9ca3af;
+    text-align: justify;
+    text-justify: inter-word;
+    max-width:1000px;
+    margin:auto;
+    padding: 0 20px;
+    line-height:1.8;
+}
+.about-section {
+    padding:4rem 2rem;
+}
+
 /* Glassmorphism Card Base */
 .glass-card {
     background: var(--glass-bg);
@@ -158,6 +173,14 @@ body::after {
     border-color: rgba(37, 99, 235, 0.3);
     box-shadow: var(--glow-blue);
     transform: translateY(-2px);
+}
+
+/*Learn More Button*/
+.learn-list{
+    color:#9ca3af;
+    margin-top:1rem;
+    padding-left:1rem;
+    line-height:2;
 }
 
 /* Typography */
