@@ -16,28 +16,59 @@ It acts as a “gateway” for system calls, ensuring unauthorized or malicious 
 
 ---
 
-## 🚀 Demo / Quick Start
+## 🚀 Quick Start & Installation
 
+Getting this project running locally is very simple because the Flask backend automatically serves all the frontend UI pages for you! Follow these easy steps:
+
+### Step 1: Clone the repository
+Make sure you have Git installed, then run:
 ```bash
-# 1. Clone the repository
-git clone https://github.com/sushantranjan912/User-Friendly-System-Call-Interface-for-Enhanced-Security.git
-cd User-Friendly-System-Call-Interface-for-Enhanced-Security
-
-# 2. Setup virtual environment (for backend)
-python3 -m venv venv
-source venv/bin/activate   # Windows: venv\Scripts\activate
-
-# 3. Install dependencies
-pip install -r requirements.txt
-
-# 4. Run the backend
-cd backend
-uvicorn main:app --reload
-
-# 5. Open frontend in browser
-# (Open index.html or as per frontend docs; or start frontend server if configured)
+git clone https://github.com/ArionGD/User-Friendly-System-Call-Interface-for-Enhanced-Security-ADI.git
+cd User-Friendly-System-Call-Interface-for-Enhanced-Security-ADI
 ```
 
+### Step 2: Set up a virtual environment (Recommended)
+This prevents project dependencies from interfering with your global Python setup.
+* **On Windows:**
+  ```powershell
+  python -m venv venv
+  .\venv\Scripts\activate
+  ```
+* **On macOS / Linux:**
+  ```bash
+  python3 -m venv venv
+  source venv/bin/activate
+  ```
+
+### Step 3: Install dependencies
+Install all the required Python packages:
+```bash
+pip install -r requirements.txt
+```
+
+### Step 4: Start the Flask application
+Navigate to the `backend` folder and start the server:
+```bash
+cd backend
+python app.py
+```
+
+### Step 5: Open it in your browser
+Once the backend server starts, open your web browser and go to:
+👉 **[http://localhost:5000](http://localhost:5000)**
+
+---
+
+## 📦 Dependencies Explained
+
+Here are the key tools this project uses and why they are necessary:
+
+* **Flask**: The core Python framework that powers our backend APIs and hosts the frontend website.
+* **Flask-CORS**: Enables Cross-Origin Resource Sharing so our frontend and backend can exchange data without security blocks during local development.
+* **PyJWT**: Generates and validates JSON Web Tokens so users can securely log in and stay authenticated.
+* **bcrypt**: Safely hashes and encrypts user passwords before they get stored in the database.
+* **python-dotenv**: Automatically loads secret settings (like DB paths) from a `.env` file.
+* **cryptography**: Handles AES-256 file encryption and decryption routines.
 
 📁 What’s Inside: Modules & Features
 
@@ -86,36 +117,24 @@ Dependencies	See requirements.txt
 ```
 
 
-🧭 Installation & Usage
+🧭 How to Use the System
 
-Clone & setup
+### 1. Account Setup
+Since this is running locally, you can create a fresh account on the signup page.
+* You can choose your role during sign-up: `admin`, `user`, or `viewer`.
+* An **Admin** gets access to full logs, dashboards, and unrestricted system/file commands.
+* A **User** can perform secure file management.
+* A **Viewer** has read-only system permissions.
 
-git clone https://github.com/sushantranjan912/User-Friendly-System-Call-Interface-for-Enhanced-Security.git
-cd User-Friendly-System-Call-Interface-for-Enhanced-Security
-python -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
+### 2. Admin Dashboard
+Log in with an account registered as an `admin` to access the Dashboard:
+* View total system statistics and active sessions.
+* Check real-time audit logs of every system call.
+* Monitor failed or unauthorized access attempts.
 
-
-Configure settings
-
-(Optional) Update configuration — e.g., encryption keys, database path, role permissions, etc.
-
-Run the backend API
-
-cd backend
-uvicorn main:app --reload
-
-
-Launch frontend
-
-Either open frontend/index.html in browser or start frontend development server (if configured).
-
-Admin or user login, then perform permitted operations (file upload / download / view logs) as per your role.
-
-Admin Dashboard
-
-Use admin credentials to view dashboard: system logs, file stats, unauthorized attempts, activity graphs, etc.
+### 3. File Manager & Encryption
+* Upload files to the secure storage interface.
+* Use the AES-256 locking mechanism to encrypt critical files with a password.
 
 
 🧑‍💻 How to Contribute
