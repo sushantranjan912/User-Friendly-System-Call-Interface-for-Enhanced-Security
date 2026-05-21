@@ -16,27 +16,59 @@ It acts as a “gateway” for system calls, ensuring unauthorized or malicious 
 
 ---
 
-## 🚀 Demo / Quick Start
+## 🚀 Getting Started
 
+### Installation & Setup
+
+Follow these simple steps to get the project running locally:
+
+**1. Clone the repository**
 ```bash
-# 1. Clone the repository
 git clone https://github.com/sushantranjan912/User-Friendly-System-Call-Interface-for-Enhanced-Security.git
 cd User-Friendly-System-Call-Interface-for-Enhanced-Security
-
-# 2. Setup virtual environment (for backend)
-python3 -m venv venv
-source venv/bin/activate   # Windows: venv\Scripts\activate
-
-# 3. Install dependencies
-pip install -r requirements.txt
-
-# 4. Run the backend
-cd backend
-uvicorn main:app --reload
-
-# 5. Open frontend in browser
-# (Open index.html or as per frontend docs; or start frontend server if configured)
 ```
+
+**2. Set up a virtual environment**
+```bash
+python -m venv venv
+# On Windows:
+venv\Scripts\activate
+# On macOS/Linux:
+source venv/bin/activate
+```
+
+**3. Install dependencies**
+```bash
+pip install -r backend/requirements.txt
+```
+
+**4. Start the Flask backend server**
+```bash
+cd backend
+python app.py
+```
+The backend will start on `http://localhost:5000`
+
+**5. Open the frontend in your browser**
+```
+http://localhost:5000
+```
+
+### Dependencies Explained
+
+Here's what each key dependency does:
+
+- **Flask** — Web framework that handles HTTP requests and serves the frontend interface
+- **PyJWT** — Securely creates and validates authentication tokens for login sessions
+- **bcrypt** — Hashes and validates user passwords securely (never stores plain text)
+- **python-dotenv** — Loads environment variables from `.env` file for sensitive configuration
+- **cryptography** — Provides AES-256 encryption for protecting sensitive files
+
+### User Roles & Dashboard
+
+- **Admin User** — Full access to file management, system calls, and admin dashboard with logs and statistics
+- **Regular User** — Can upload, download, and manage their own files; can view their activity logs
+- **Admin Dashboard** — Shows system statistics, file activity, unauthorized access attempts, and real-time logs
 
 
 📁 What’s Inside: Modules & Features
@@ -67,7 +99,7 @@ uvicorn main:app --reload
 🛠️ Tech Stack
 Layer	Technologies / Tools
 Frontend	HTML, CSS, JavaScript (modern UI)
-Backend	Python (Flask / FastAPI)
+Backend	Python (Flask)
 System Layer	C or system-level wrappers (for low-level calls) + Python bridging
 Security	JWT authentication, AES-256 encryption, Role-Based Access Control (RBAC)
 Storage / Logs	SQLite or secure flat-file / database
@@ -86,39 +118,7 @@ Dependencies	See requirements.txt
 ```
 
 
-🧭 Installation & Usage
-
-Clone & setup
-
-git clone https://github.com/sushantranjan912/User-Friendly-System-Call-Interface-for-Enhanced-Security.git
-cd User-Friendly-System-Call-Interface-for-Enhanced-Security
-python -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-
-
-Configure settings
-
-(Optional) Update configuration — e.g., encryption keys, database path, role permissions, etc.
-
-Run the backend API
-
-cd backend
-uvicorn main:app --reload
-
-
-Launch frontend
-
-Either open frontend/index.html in browser or start frontend development server (if configured).
-
-Admin or user login, then perform permitted operations (file upload / download / view logs) as per your role.
-
-Admin Dashboard
-
-Use admin credentials to view dashboard: system logs, file stats, unauthorized attempts, activity graphs, etc.
-
-
-🧑‍💻 How to Contribute
+‍💻 How to Contribute
 
 Contributions, improvements, bug-fixes, and documentation enhancements are welcome!
 
