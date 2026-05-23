@@ -72,5 +72,14 @@
     "owner": 1,
     "is_locked": true,
     "lock_hash": "scrypt:32768:8:1$XsDY4VRpdqPSsslP$f4562ab2561aa16b68af0e9874a545f3731cf358e8f2bcc85480349e39445b27371cc302474fd3feb67e4fc2f1b48e7214d677faac29fc51dc5174e53aad18d2"
+  },
+  "upload_test.txt": {
+    "view": true,
+    "download": true,
+    "edit": false,
+    "delete": false,
+    "owner": 6,
+    "is_locked": false,
+    "lock_hash": null
   }
 }
