@@ -18,6 +18,9 @@ class Config:
         'ls', 'dir', 'pwd', 'whoami', 'date', 'echo',
         'ipconfig', 'hostname', 'systeminfo', 'tasklist'
     ]
+    # File upload restrictions
+    ALLOWED_UPLOAD_EXTENSIONS = {"txt", "pdf", "png", "jpg", "jpeg", "gif", "md", "enc"}
+    MAX_UPLOAD_SIZE = 10 * 1024 * 1024  # 10 MB
     
     # Rate Limiting
     RATE_LIMIT_ENABLED = True

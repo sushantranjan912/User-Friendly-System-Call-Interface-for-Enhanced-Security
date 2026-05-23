@@ -9,6 +9,7 @@ from database.db_connection import Database
 from utils.auth_utils import token_required, role_required
 from utils.helpers import get_client_ip, success_response, error_response
 from utils.secure_ops import secure_read, secure_write, secure_delete, is_safe_path, SANDBOX_DIR
+from utils.validators import validate_filename, validate_filesize
 from config import Config
 
 file_manager_bp = Blueprint('file_manager', __name__)
@@ -70,6 +71,10 @@ def create_file(current_user):
     
     if not filename:
         return error_response('Filename is required.')
+
+    # Validate filename
+    if not validate_filename(filename):
+        return error_response('Invalid or unsafe filename. Use alphanumeric, dashes, underscores, and an allowed extension.')
     
     try:
         # Check if file exists to prevent overwrite if not intended (though secure_write overwrites)
@@ -86,7 +91,7 @@ def read_file(current_user, filename):
     """Read file content"""
     try:
         filename = secure_filename(filename)
-        if not is_safe_path(filename):
+        if not validate_filename(filename) or not is_safe_path(filename):
             return error_response('Invalid filename.')
         
         file_path = os.path.join(SANDBOX_DIR, filename)
@@ -140,6 +145,11 @@ def update_file(current_user, filename):
     content = data.get('content', '')
     
     try:
+        # Sanitize and validate filename
+        filename = secure_filename(filename)
+        if not validate_filename(filename):
+            return error_response('Invalid filename.')
+
         permissions = get_file_permissions(filename)
         
         # Check File Lock
@@ -163,6 +173,10 @@ def update_file(current_user, filename):
 def delete_file(current_user, filename):
     """Delete file (Move to Recycle Bin)"""
     try:
+        filename = secure_filename(filename)
+        if not validate_filename(filename):
+            return error_response('Invalid filename.')
+
         permissions = get_file_permissions(filename)
         
         # Check File Lock
@@ -261,6 +275,10 @@ def upload_file(current_user):
             import json
             
             filename = secure_filename(file.filename)
+
+            # Validate filename and extension
+            if not validate_filename(filename):
+                return error_response('Invalid or unsupported filename/extension.')
             encrypt = request.form.get('encrypt', 'false').lower() == 'true'
             passcode = request.form.get('passcode', '')
             permissions_str = request.form.get('permissions', '{"view": true, "download": true, "edit": false, "delete": false}')
@@ -278,6 +296,10 @@ def upload_file(current_user):
             
             # Read file content as bytes
             content = file.read()
+
+            # Validate file size
+            if not validate_filesize(len(content)):
+                return error_response(f'File exceeds maximum allowed size of {Config.MAX_UPLOAD_SIZE} bytes.')
             
             final_filename = filename
             
