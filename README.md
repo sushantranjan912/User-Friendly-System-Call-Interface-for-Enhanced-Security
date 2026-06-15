@@ -1,7 +1,24 @@
+
 # 🛡️ User-Friendly System Call Interface for Enhanced Security
 
 [![GitHub stars](https://img.shields.io/github/stars/sushantranjan912/User-Friendly-System-Call-Interface-for-Enhanced-Security.svg?style=social)](https://github.com/sushantranjan912/User-Friendly-System-Call-Interface-for-Enhanced-Security/stargazers)  
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+
+## 📑 Table of Contents
+
+- [Project Overview](#-project-overview)
+- [Demo / Quick Start](#-demo--quick-start)
+- [What's Inside: Modules & Features](#-whats-inside-modules--features)
+- [Key Features](#-key-features)
+- [Tech Stack](#️-tech-stack)
+- [Project Structure](#-project-structure)
+- [Installation & Usage](#-installation--usage)
+- [How to Contribute](#-how-to-contribute)
+- [License](#-license)
+- [Author / Maintainer](#-author--maintainer)
+- [Future Roadmap & Enhancements](#-future-roadmap--enhancements)
+
+---
 
 ## 🔎 Project Overview
 
