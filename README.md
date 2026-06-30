@@ -1,161 +1,192 @@
-# 🛡️ User-Friendly System Call Interface for Enhanced Security
+## 🧭 Installation & Usage
 
-[![GitHub stars](https://img.shields.io/github/stars/sushantranjan912/User-Friendly-System-Call-Interface-for-Enhanced-Security.svg?style=social)](https://github.com/sushantranjan912/User-Friendly-System-Call-Interface-for-Enhanced-Security/stargazers)  
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-
-## 🔎 Project Overview
-
-Secure System Call Interface (Enhanced Security File Manager) is a web-based platform designed to **perform system-level operations safely** (like file management and process execution) via a controlled interface — with **authentication, role-based authorization, encryption, and comprehensive logging**.  
-It acts as a “gateway” for system calls, ensuring unauthorized or malicious operations are prevented, and all activity is auditable.
-
-**Why this project matters:**
-
-- Most native system calls expose powerful operations — misuse could compromise the system.  
-- This interface restricts those operations to authorized users only.  
-- Detailed logs + audit trails + optional analytics help administrators monitor usage and detect suspicious behavior.  
+Follow these steps carefully to set up and run the project locally.
 
 ---
 
-## 🚀 Demo / Quick Start
+# ✅ Prerequisites
+
+Make sure the following are installed on your system:
+
+* Python 3.10 or above
+* Git
+* A code editor like VS Code
+
+You can verify installation using:
 
 ```bash
-# 1. Clone the repository
+python --version
+git --version
+```
+
+---
+
+# 📥 Step 1: Clone the Repository
+
+Open terminal or command prompt and run:
+
+```bash
 git clone https://github.com/sushantranjan912/User-Friendly-System-Call-Interface-for-Enhanced-Security.git
+```
+
+This downloads the project to your computer.
+
+Now move into the project folder:
+
+```bash
 cd User-Friendly-System-Call-Interface-for-Enhanced-Security
-
-# 2. Setup virtual environment (for backend)
-python3 -m venv venv
-source venv/bin/activate   # Windows: venv\Scripts\activate
-
-# 3. Install dependencies
-pip install -r requirements.txt
-
-# 4. Run the backend
-cd backend
-uvicorn main:app --reload
-
-# 5. Open frontend in browser
-# (Open index.html or as per frontend docs; or start frontend server if configured)
 ```
 
+---
 
-📁 What’s Inside: Modules & Features
+# 🛠️ Step 2: Create Virtual Environment
 
-| Module / Component                   | Responsibilities / Features                                                                                                     |
-| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------- |
-| **Authentication & Auth Layer**      | Secure login, token-based sessions, role-based access control (RBAC)                                                            |
-| **Protected System Call Interface**  | Safe wrappers for file operations, process/network calls; input sanitization; permission enforcement                            |
-| **File Manager + Encryption**        | Upload / Download / Edit / Delete / Recycle-Bin for files, AES-256 encryption support, optional file passcode locking           |
-| **Audit Logging**                    | Detailed logging of every action — user, timestamp, operation, parameters, status, IP/client info                               |
-| **Security Dashboard / Admin Panel** | Stats & metrics: total files, encrypted files, active users, unauthorized attempts; real-time logs; system-call activity charts |
-| **Future-ready hooks**               | Designed for optional modules like anomaly detection, MFA, firewall / rate-limiting, version history, alerts                    |
+Create a Python virtual environment:
 
-
-💡 Key Features
-
-🔐 Secure Authentication — login with tokens, role-based permission; separation between admin and normal users.
-
-🗄️ Advanced File Management — upload, edit, download, delete; encrypted storage; file-level locking and recycle bin with restore.
-
-⚙️ Controlled System Calls — OS-level operations executed only through validated, sanitized requests.
-
-📜 Full Audit Logs — every system call and user action logged with details (user, time, parameters, result).
-
-📊 Admin Dashboard — view system activity, file stats, unauthorized attempts, real-time logs, and activity graphs.
-
-
-🛠️ Tech Stack
-Layer	Technologies / Tools
-Frontend	HTML, CSS, JavaScript (modern UI)
-Backend	Python (Flask / FastAPI)
-System Layer	C or system-level wrappers (for low-level calls) + Python bridging
-Security	JWT authentication, AES-256 encryption, Role-Based Access Control (RBAC)
-Storage / Logs	SQLite or secure flat-file / database
-Dependencies	See requirements.txt
-
-
-🧱 Project Structure
-```
-/
-├── backend/           # API server, authentication, syscall interface
-├── frontend/          # Web UI (file manager, dashboard)
-├── database/          # DB or storage setup
-├── docs/              # Documentation, design notes
-├── README.md          # ← You are here
-└── requirements.txt   # Python (and other) dependencies
-```
-
-
-🧭 Installation & Usage
-
-Clone & setup
-
-git clone https://github.com/sushantranjan912/User-Friendly-System-Call-Interface-for-Enhanced-Security.git
-cd User-Friendly-System-Call-Interface-for-Enhanced-Security
+```bash
 python -m venv venv
+```
+
+Activate the virtual environment:
+
+### Windows
+
+```bash
+venv\Scripts\activate
+```
+
+### Linux / macOS
+
+```bash
 source venv/bin/activate
+```
+
+After activation, you should see `(venv)` in the terminal.
+
+---
+
+# 📦 Step 3: Install Dependencies
+
+Run:
+
+```bash
 pip install -r requirements.txt
+```
 
+This installs all required Python packages and dependencies needed for the backend server.
 
-Configure settings
+> If pip is outdated, update it using:
 
-(Optional) Update configuration — e.g., encryption keys, database path, role permissions, etc.
+```bash
+python -m pip install --upgrade pip
+```
 
-Run the backend API
+---
 
+# ⚙️ Step 4: Configure the Project (Optional)
+
+You may configure:
+
+* Encryption keys
+* Database paths
+* Role permissions
+* Security settings
+
+based on your requirements.
+
+---
+
+# 🚀 Step 5: Run the Backend Server
+
+Move into backend directory:
+
+```bash
 cd backend
+```
+
+Start the FastAPI server:
+
+```bash
 uvicorn main:app --reload
+```
 
+If successful, you will see output similar to:
 
-Launch frontend
+```bash
+Uvicorn running on http://127.0.0.1:8000
+```
 
-Either open frontend/index.html in browser or start frontend development server (if configured).
+The backend server is now running locally.
 
-Admin or user login, then perform permitted operations (file upload / download / view logs) as per your role.
+---
 
-Admin Dashboard
+# 🌐 Step 6: Launch Frontend
 
-Use admin credentials to view dashboard: system logs, file stats, unauthorized attempts, activity graphs, etc.
+Open the frontend files in your browser.
 
+You can either:
 
-🧑‍💻 How to Contribute
+* Open `frontend/index.html` directly
+  OR
+* Run a frontend development server if configured
 
-Contributions, improvements, bug-fixes, and documentation enhancements are welcome!
+---
 
-Fork the repository
+# 🔑 Step 7: Login & Use Features
 
-Create a new branch (git checkout -b feature/my-feature)
+After launching the project:
 
-Make changes & add tests as needed
+* Login using user/admin credentials
+* Upload and manage files
+* View logs and activity
+* Access dashboard features based on your role
 
-Submit a Pull Request — please describe your changes and rationale
+---
 
+# 📊 Admin Dashboard
 
-📄 License
+Admins can:
 
-This project is licensed under the MIT License. See the LICENSE
- file for details.
+* Monitor system activity
+* View audit logs
+* Check unauthorized access attempts
+* Analyze file and user statistics
 
+---
 
-🙋 Author / Maintainer
+# ❗ Common Beginner Issues
 
-rajaman85, sushantranjan912, bittusingh14 — we’re the original authors. Thanks for building and sharing this!
+## `uvicorn` not recognized
 
+Install uvicorn manually:
 
-🔮 Future Roadmap & Enhancements
+```bash
+pip install uvicorn
+```
 
-🛡️ Multi-Factor Authentication (MFA)
+---
 
-🤖 ML-based Anomaly Detection & Alerting for suspicious usage patterns
+## Permission denied while activating virtual environment
 
-🔔 Real-time Alerts (email / SMS) for security events
+Try running terminal as administrator or use the correct activation command for your OS.
 
-📂 Version history for files
+---
 
-🛑 Firewall / Rate-limiting on system calls
+## Missing dependencies
 
-🔄 More OS-level operations (network, process management, etc.)
+Run again:
 
-“A well-documented project is the first step toward collaboration and trust.”
+```bash
+pip install -r requirements.txt
+```
 
-Thanks for checking out this project — feel free to ⭐ the repo if you like it!
+---
+
+# ✅ Project Successfully Running
+
+If everything works correctly:
+
+* Backend runs on localhost
+* Frontend opens successfully
+* Login system works
+* Dashboard and file manager become accessible
