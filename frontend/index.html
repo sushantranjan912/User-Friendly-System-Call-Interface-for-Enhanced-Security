@@ -17,8 +17,8 @@
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: #000000;
-            color: #ffffff;
+            background: var(--bg-primary);
+            color: var(--text-primary);
             overflow-x: hidden;
             scroll-behavior: smooth;
         }
@@ -30,7 +30,7 @@
             left: 0;
             right: 0;
             z-index: 1000;
-            background: rgba(0, 0, 0, 0.8);
+            background: var(--bg-secondary);
             backdrop-filter: blur(20px);
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
@@ -47,7 +47,7 @@
         .navbar-brand {
             font-size: 1.5rem;
             font-weight: 700;
-            color: #ffffff;
+            color: var(--text-primary);
             text-decoration: none;
         }
 
@@ -59,7 +59,7 @@
         }
 
         .navbar-link {
-            color: #e5e7eb;
+            color: var(--text-secondary);
             text-decoration: none;
             font-weight: 500;
             transition: color 0.3s;
@@ -68,6 +68,13 @@
         .navbar-link:hover {
             color: #2563eb;
         }
+
+        #themeToggle {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 1.2rem;}
 
         /* Hero Section */
         .hero {
@@ -153,13 +160,13 @@
             font-weight: 800;
             line-height: 1.1;
             margin-bottom: 1.5rem;
-            color: #ffffff;
+            color: var(--text-primary);
             letter-spacing: -0.02em;
         }
 
         .hero-subtitle {
             font-size: 1.25rem;
-            color: #9ca3af;
+            color: var(--text-secondary);
             max-width: 700px;
             margin: 0 auto 3rem;
             line-height: 1.6;
@@ -197,10 +204,10 @@
         }
 
         .btn-secondary {
-            background: rgba(255, 255, 255, 0.05);
+            background: var(--glass-bg);
             backdrop-filter: blur(10px);
-            color: #e5e7eb;
-            border: 2px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+            border: 1px solid var(--glass-border);
         }
 
         .btn-secondary:hover {
@@ -224,20 +231,20 @@
             font-size: 0.75rem;
             text-transform: uppercase;
             letter-spacing: 0.1em;
-            color: #9ca3af;
+            color: var(--text-secondary);
             margin-bottom: 0.5rem;
         }
 
         .feature-badge-value {
             font-size: 1.25rem;
             font-weight: 700;
-            color: #ffffff;
+            color: var(--text-primary);
         }
 
         /* Features Grid Section */
         .features-section {
             padding: 6rem 2rem;
-            background: rgba(17, 24, 39, 0.5);
+            background: var(--bg-secondary);
         }
 
         .features-container {
@@ -250,12 +257,12 @@
             font-weight: 700;
             text-align: center;
             margin-bottom: 1rem;
-            color: #ffffff;
+            color: var(--text-primary);
         }
 
         .section-subtitle {
             font-size: 1.125rem;
-            color: #9ca3af;
+            color: var(--text-secondary);
             text-align: center;
             margin-bottom: 4rem;
         }
@@ -267,7 +274,7 @@
         }
 
         .feature-card {
-            background: rgba(31, 41, 55, 0.5);
+            background: var(--bg-card);
             backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.1);
             padding: 2rem;
@@ -291,11 +298,11 @@
             font-size: 1.5rem;
             font-weight: 700;
             margin-bottom: 0.75rem;
-            color: #ffffff;
+            color: var(--text-primary);
         }
 
         .feature-description {
-            color: #9ca3af;
+            color: var(--text-secondary);
             line-height: 1.6;
         }
 
@@ -319,8 +326,8 @@
         }
 
         .modal-content {
-            background: rgba(31, 41, 55, 0.95);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: var(--bg-card);
+            border: 1px solid var(--glass-border);
             border-radius: 16px;
             padding: 2.5rem;
             max-width: 450px;
@@ -335,7 +342,7 @@
             background: none;
             border: none;
             font-size: 2rem;
-            color: #9ca3af;
+            color: var(--text-secondary);
             cursor: pointer;
             line-height: 1;
         }
@@ -344,7 +351,7 @@
             font-size: 1.75rem;
             font-weight: 700;
             margin-bottom: 1.5rem;
-            color: #ffffff;
+            color: var(--text-primary);
         }
 
         .form-group {
@@ -355,17 +362,17 @@
             display: block;
             margin-bottom: 0.5rem;
             font-weight: 500;
-            color: #e5e7eb;
+            color: var(--text-secondary);
         }
 
         .form-input,
         .form-select {
             width: 100%;
             padding: 0.875rem;
-            background: rgba(17, 24, 39, 0.8);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: var(--bg-secondary);
+            border: 1px solid var(--glass-border);
             border-radius: 8px;
-            color: #ffffff;
+            color: var(--text-primary);
             font-size: 1rem;
         }
 
@@ -419,6 +426,9 @@
             <ul class="navbar-menu">
                 <li><a href="#features" class="navbar-link">Features</a></li>
                 <li><a href="#about" class="navbar-link">About</a></li>
+                <li><button id="themeToggle" style="background:none;border:none;color:inherit;cursor:pointer;font-size:1.2rem;">
+    ☾
+</button></li> <!-- NEW TOGGLE BUTTON -->
                 <li><a href="#" class="navbar-link" id="loginBtn">Login</a></li>
                 <li><a href="#" class="btn btn-primary btn-sm" style="padding: 0.625rem 1.5rem; font-size: 0.875rem;"
                         id="getStartedBtn">Get Started</a></li>
@@ -671,6 +681,22 @@
                 registerModal.classList.remove('active');
             }
         });
+
+        if (localStorage.getItem('theme') === 'light') {
+    document.body.classList.add('light-theme');
+    themeToggle.innerHTML = '☀';
+}
+        themeToggle.addEventListener('click', () => {
+    document.body.classList.toggle('light-theme');
+
+    if (document.body.classList.contains('light-theme')) {
+        themeToggle.innerHTML = '☀';
+        localStorage.setItem('theme', 'light');
+    } else {
+        themeToggle.innerHTML = '☾';
+        localStorage.setItem('theme', 'dark');
+    }
+});
     </script>
 </body>
 
