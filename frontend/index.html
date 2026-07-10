@@ -20,6 +20,7 @@
             background: #000000;
             color: #ffffff;
             overflow-x: hidden;
+            scroll-behavior: smooth;
         }
 
         /* Navbar */
@@ -436,7 +437,7 @@
 
                 <div class="hero-buttons">
                     <button class="btn btn-primary" id="heroGetStarted">Get Started Free</button>
-                    <button class="btn btn-secondary">Learn More</button>
+                    <a href="#about" class="btn btn-secondary">Learn More</a>
                 </div>
             </div>
             
@@ -493,7 +494,46 @@
             </div>
         </div>
     </section>
+<!-- About Section -->
+<section class="features-section" id="about">
+    <div class="features-container">
+        <h2 class="section-title">About Us</h2>
+        <p class="section-subtitle">
+            The Secure System Call Interface is a modern security-focused platform
+            designed to safely execute system-level operations with authentication,
+            encryption, audit logging, and role-based access control.
+        </p>
 
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🛡️</div>
+                <h3 class="feature-title">Enterprise Security</h3>
+                <p class="feature-description">
+                    Built with secure authentication, protected execution,
+                    and real-time monitoring to prevent unauthorized access.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">📂</div>
+                <h3 class="feature-title">Secure File Management</h3>
+                <p class="feature-description">
+                    Upload, manage, encrypt, and monitor files safely
+                    with complete activity tracking and logs.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">📈</div>
+                <h3 class="feature-title">Real-Time Monitoring</h3>
+                <p class="feature-description">
+                    Track user activity, logs, and system actions
+                    with detailed analytics and auditing tools.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
     <!-- Login Modal -->
     <div class="modal" id="loginModal">
         <div class="modal-content">
