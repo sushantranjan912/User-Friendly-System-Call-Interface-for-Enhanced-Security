@@ -97,6 +97,11 @@ def serve_static(path):
 # =========================
 # ERROR HANDLERS
 # =========================
+import logging
+import traceback
+
+logger = logging.getLogger(__name__)
+
 @app.errorhandler(404)
 def not_found(e):
     return jsonify({'error': 'Resource not found', 'success': False}), 404
@@ -105,6 +110,13 @@ def not_found(e):
 @app.errorhandler(500)
 def internal_error(e):
     return jsonify({'error': 'Internal server error', 'success': False}), 500
+
+
+@app.errorhandler(Exception)
+def handle_exception(e):
+    """Catch all unhandled exceptions, log them internally, and return generic error"""
+    logger.error("Unhandled exception: %s", traceback.format_exc())
+    return jsonify({'error': 'An internal error occurred', 'success': False}), 500
 
 
 # =========================
@@ -118,4 +130,5 @@ if __name__ == '__main__':
     print(f">>> Frontend directory: {FRONTEND_DIR}")
     print(f">>> Test endpoint: http://localhost:5000/api/test")
 
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    debug_mode = os.environ.get('FLASK_DEBUG', 'false').lower() == 'true'
+    app.run(debug=debug_mode, host='0.0.0.0', port=5000)
