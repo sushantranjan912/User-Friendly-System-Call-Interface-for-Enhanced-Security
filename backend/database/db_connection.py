@@ -26,8 +26,14 @@ class Database:
     
     @contextmanager
     def get_connection(self):
-        """Context manager for database connections"""
-        conn = sqlite3.connect(self.db_path)
+        """Context manager for database connections
+
+        Use check_same_thread=False to allow concurrent access from multiple
+        request threads. SQLite's default behavior (True) would cause "database
+        is locked" errors under concurrent load. Each thread creates its own
+        connection, so thread safety is handled via connection isolation.
+        """
+        conn = sqlite3.connect(self.db_path, check_same_thread=False)
         conn.row_factory = sqlite3.Row
         try:
             yield conn
