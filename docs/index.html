@@ -385,7 +385,30 @@
             display: block;
         }
 
-        /* Responsive */
+        #about{
+            min-height:60vh;
+            padding:100px 40px;
+            background: linear-gradient(to bottom,#0f172a,#111827);
+            color:whilte;
+        }
+         .about-container   
+         {
+            max-width:900px;
+            margin:auto;
+            text-align:center;
+         } 
+         .about-container h2{
+            font-size:3rem;
+            margin-bottom:20px;
+            color:#ffffff;
+         }  
+         .about-container p
+        {
+            font-size:1.2rem;
+            line-height:1.8;
+            color:#d1d5db
+        }
+           /* Responsive */
         @media (max-width: 768px) {
             .hero-title {
                 font-size: 2.5rem;
@@ -436,7 +459,7 @@
 
                 <div class="hero-buttons">
                     <button class="btn btn-primary" id="heroGetStarted">Get Started Free</button>
-                    <button class="btn btn-secondary">Learn More</button>
+                    <a href="#about" class="btn btn-secondary">Learn More</a>
                 </div>
             </div>
             
@@ -547,6 +570,15 @@
             </form>
         </div>
     </div>
+    <section id="about">
+        <div class=""about-container">
+        <h2>About Us</h2>
+    <p>
+        This project a secure system call Interface
+        with enhanced securityand authentication,
+        monitoring ,and reliable command execution.
+    </p></div>
+    </section>
 
     <script src="js/modules/api.js"></script>
     <script src="js/modules/auth.js"></script>

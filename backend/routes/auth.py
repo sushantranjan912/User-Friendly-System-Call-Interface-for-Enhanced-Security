@@ -62,8 +62,10 @@ def register():
             'role': role
         }, 'Registration successful')), 201
         
-    except Exception:
-        return error_response('Registration failed due to a server error.', 500)
+    except Exception as e:
+        import logging
+        logging.exception("Registration failed")
+        return error_response('Registration failed. Please try again.', 500)
 
 @auth_bp.route('/login', methods=['POST'])
 def login():

@@ -8,6 +8,33 @@ from config import Config
 system_calls_bp = Blueprint('system_calls', __name__)
 db = Database(Config.DATABASE_PATH)
 
+
+@system_calls_bp.before_request
+def enforce_authentication():
+    """Enforce authentication for all syscall endpoints.
+
+    This is a defense-in-depth safeguard: every route in this blueprint
+    should have @token_required, but this ensures no route can be accessed
+    without authentication even if a future change accidentally removes
+    the decorator.
+    """
+    from utils.auth_utils import decode_token
+
+    token = None
+    if 'Authorization' in request.headers:
+        auth_header = request.headers['Authorization']
+        try:
+            token = auth_header.split(' ')[1]
+        except IndexError:
+            return jsonify({'error': 'Invalid token format'}), 401
+
+    if not token:
+        return jsonify({'error': 'Token is missing. Syscall execution requires authentication'}), 401
+
+    payload = decode_token(token)
+    if not payload:
+        return jsonify({'error': 'Token is invalid or expired'}), 401
+
 @system_calls_bp.route('/execute', methods=['POST'])
 @token_required
 def execute_command(current_user):
@@ -40,7 +67,9 @@ def execute_command(current_user):
     except ValueError as e:
         return error_response(str(e))
     except Exception as e:
-        return error_response(f'Execution failed: {str(e)}', 500)
+        import logging
+        logging.exception("Syscall execution failed")
+        return error_response('Execution failed. Please try again.', 500)
 
 @system_calls_bp.route('/history', methods=['GET'])
 @token_required
