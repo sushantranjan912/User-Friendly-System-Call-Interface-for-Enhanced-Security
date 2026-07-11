@@ -12,7 +12,7 @@ db = Database(Config.DATABASE_PATH)
 @auth_bp.route('/register', methods=['POST'])
 def register():
     """Register a new user"""
-    data = request.get_json()
+    data = request.get_json() or {}
     
     # Validate input
     username = data.get('username', '').strip()
@@ -22,16 +22,16 @@ def register():
     
     # Validation
     if not validate_username(username):
-        return error_response('Invalid username. Must be 3-20 alphanumeric characters.')
+        return error_response('Invalid username. Must be 3-20 characters with letters, numbers, or underscore.', 400)
     
     if not validate_email(email):
-        return error_response('Invalid email format.')
+        return error_response('Invalid email format.', 400)
     
     if not validate_password(password):
-        return error_response('Password must be at least 8 characters with letters and numbers.')
+        return error_response('Password must be at least 8 characters and include letters and numbers.', 400)
     
     if not validate_role(role):
-        return error_response('Invalid role.')
+        return error_response('Invalid role.', 400)
     
     # Check if user already exists
     existing_user = db.execute_query(
@@ -40,9 +40,8 @@ def register():
     )
     
     if existing_user:
-        return error_response('Username or email already exists.')
+        return error_response('Username or email already exists.', 409)
     
-    # Hash password and create user
     password_hash = hash_password(password)
     
     try:
@@ -51,7 +50,6 @@ def register():
             (username, email, password_hash, role)
         )
         
-        # Log the registration
         db.execute_insert(
             'INSERT INTO logs (user_id, action_type, ip_address, status, details) VALUES (?, ?, ?, ?, ?)',
             (user_id, 'register', get_client_ip(request), 'success', f'User {username} registered')
@@ -65,87 +63,50 @@ def register():
         }, 'Registration successful')), 201
         
     except Exception as e:
-        return error_response(f'Registration failed: {str(e)}', 500)
+        import logging
+        logging.exception("Registration failed")
+        return error_response('Registration failed. Please try again.', 500)
 
 @auth_bp.route('/login', methods=['POST'])
 def login():
     """Login user and return JWT token"""
-    data = request.get_json()
+    data = request.get_json() or {}
     
-    username = data.get('username', '').strip()
+    email = data.get('email', '').strip()
     password = data.get('password', '')
     
-    if not username or not password:
-        return error_response('Username and password are required.')
+    if not email or not password:
+        return error_response('Email and password are required.', 400)
     
     client_ip = get_client_ip(request)
     
-    # TODO: Re-enable after fixing database schema issue
-    # # Check for temporary block (5 failed attempts in last 15 minutes)
-    # recent_failures = db.execute_query(
-    #     '''SELECT COUNT(*) as count FROM login_attempts 
-    #        WHERE ip_address = ? AND success = 0 
-    #        AND attempt_time >= datetime('now', '-15 minutes')''',
-    #     (client_ip,)
-    # )
-    # 
-    # if recent_failures and recent_failures[0]['count'] >= 5:
-    #     # Log suspicious activity
-    #     db.execute_insert(
-    #         'INSERT INTO logs (action_type, ip_address, status, details) VALUES (?, ?, ?, ?)',
-    #         ('login_blocked', client_ip, 'suspicious', f'Temporary block due to repeated failed attempts: {username}')
-    #     )
-    #     return error_response('Too many failed attempts. Please try again later.', 429)
-    
-    # Get user from database
     users = db.execute_query(
-        'SELECT id, username, email, password_hash, role FROM users WHERE username = ?',
-        (username,)
+        'SELECT id, username, email, password_hash, role FROM users WHERE email = ?',
+        (email,)
     )
     
     if not users:
-        # Log failed login attempt
         db.execute_insert(
             'INSERT INTO logs (action_type, ip_address, status, details) VALUES (?, ?, ?, ?)',
-            ('login', client_ip, 'failure', f'Failed login attempt for {username}')
+            ('login', client_ip, 'failure', f'Failed login attempt for {email}')
         )
-        # # Record failed attempt for blocking
-        # db.execute_insert(
-        #     'INSERT INTO login_attempts (ip_address, username, success) VALUES (?, ?, 0)',
-        #     (client_ip, username)
-        # )
-        return error_response('Invalid credentials.')
+        return error_response('Invalid email or password.', 401)
     
     user = dict(users[0])
     
-    # Verify password
     if not verify_password(password, user['password_hash']):
-        # Log failed login attempt
         db.execute_insert(
             'INSERT INTO logs (user_id, action_type, ip_address, status, details) VALUES (?, ?, ?, ?, ?)',
             (user['id'], 'login', client_ip, 'failure', 'Invalid password')
         )
-        # # Record failed attempt for blocking
-        # db.execute_insert(
-        #     'INSERT INTO login_attempts (ip_address, username, success) VALUES (?, ?, 0)',
-        #     (client_ip, username)
-        # )
-        return error_response('Invalid credentials.')
+        return error_response('Invalid email or password.', 401)
     
-    # Generate token
     token = generate_token(user['id'], user['username'], user['role'])
     
-    # Log successful login
     db.execute_insert(
         'INSERT INTO logs (user_id, action_type, ip_address, status, details) VALUES (?, ?, ?, ?, ?)',
         (user['id'], 'login', client_ip, 'success', 'User logged in')
     )
-    
-    # # Record successful attempt (optional, but good for tracking)
-    # db.execute_insert(
-    #     'INSERT INTO login_attempts (ip_address, username, success) VALUES (?, ?, 1)',
-    #     (client_ip, username)
-    # )
     
     return jsonify(success_response({
         'token': token,
