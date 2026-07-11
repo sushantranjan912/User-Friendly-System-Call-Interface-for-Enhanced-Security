@@ -1,27 +1,5 @@
 // UI Module - Toast Notifications, Modals, etc.
 
-// Show Toast Notification
-function showToast(message, type = 'info') {
-    const container = document.getElementById('toastContainer');
-    if (!container) return;
-
-    const toast = document.createElement('div');
-    toast.className = `toast ${type}`;
-    toast.innerHTML = `
-        <span>${message}</span>
-    `;
-
-    container.appendChild(toast);
-
-    // Auto remove after 3 seconds
-    setTimeout(() => {
-        toast.style.animation = 'slideOutRight 0.3s ease';
-        setTimeout(() => {
-            container.removeChild(toast);
-        }, 300);
-    }, 3000);
-}
-
 // Modal Functions
 function openModal(modalId) {
     const modal = document.getElementById(modalId);

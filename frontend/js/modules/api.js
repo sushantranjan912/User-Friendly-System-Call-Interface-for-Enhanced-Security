@@ -1,46 +1,86 @@
 // API Communication Module
-const API_BASE_URL = 'http://localhost:5000/api';
+const API_BASE_URL = window.API_BASE_URL || `${window.location.origin}/api`;
+const REQUEST_TIMEOUT_MS = 10000;
 
-// API Helper Function
+function createApiError(message, status = 0, data = null) {
+    const error = new Error(message);
+    error.status = status;
+    if (data) {
+        error.data = data;
+    }
+    return error;
+}
+
+function getFriendlyErrorMessage(status, serverMessage) {
+    switch (status) {
+        case 400:
+            return serverMessage || 'Invalid request. Please check your input.';
+        case 401:
+            return serverMessage || 'Unauthorized. Please login again.';
+        case 403:
+            return serverMessage || 'Forbidden. You do not have permission to access this resource.';
+        case 404:
+            return serverMessage || 'Server unavailable or endpoint not found.';
+        case 409:
+            return serverMessage || 'Resource conflict. Please review your request.';
+        case 500:
+            return serverMessage || 'Unexpected server error. Please try again later.';
+        default:
+            return serverMessage || 'Request failed. Please try again.';
+    }
+}
+
+function normalizeFetchError(error) {
+    if (error.name === 'AbortError') {
+        return createApiError('Request timed out. Please try again.', 0);
+    }
+
+    if (error instanceof TypeError) {
+        return createApiError('Network connection failed. Please check your internet connection or server status.', 0);
+    }
+
+    return error.status ? error : createApiError(error.message || 'Unexpected network error.', 0);
+}
+
 async function apiRequest(endpoint, options = {}) {
     const token = localStorage.getItem('token');
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
 
-    const defaultOptions = {
-        headers: {
-            'Content-Type': 'application/json',
-            ...(token && { 'Authorization': `Bearer ${token}` })
-        }
+    const defaultHeaders = {
+        'Content-Type': 'application/json',
+        ...(token && { Authorization: `Bearer ${token}` })
     };
 
     const config = {
-        ...defaultOptions,
         ...options,
         headers: {
-            ...defaultOptions.headers,
+            ...defaultHeaders,
             ...options.headers
-        }
+        },
+        signal: controller.signal
     };
 
     try {
         const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
-        const data = await response.json();
+        const contentType = response.headers.get('content-type') || '';
+        const data = contentType.includes('application/json') ? await response.json() : null;
 
         if (!response.ok) {
-            if (response.status === 401) {
+            if (response.status === 401 || response.status === 403) {
                 localStorage.removeItem('token');
                 localStorage.removeItem('user');
-                window.location.href = '/';
-                return;
             }
-            const error = new Error(data.error || 'Request failed');
-            error.data = data;
-            throw error;
+
+            const message = (data && data.error) ? data.error : getFriendlyErrorMessage(response.status, response.statusText);
+            throw createApiError(message, response.status, data);
         }
 
         return data;
     } catch (error) {
-        console.error('API Error:', error);
-        throw error;
+        throw normalizeFetchError(error);
+    } finally {
+        clearTimeout(timeoutId);
     }
 }
 
@@ -53,10 +93,10 @@ const authAPI = {
         });
     },
 
-    async login(username, password) {
+    async login(email, password) {
         return apiRequest('/auth/login', {
             method: 'POST',
-            body: JSON.stringify({ username, password })
+            body: JSON.stringify({ email, password })
         });
     },
 
