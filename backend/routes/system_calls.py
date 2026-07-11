@@ -67,7 +67,9 @@ def execute_command(current_user):
     except ValueError as e:
         return error_response(str(e))
     except Exception as e:
-        return error_response(f'Execution failed: {str(e)}', 500)
+        import logging
+        logging.exception("Syscall execution failed")
+        return error_response('Execution failed. Please try again.', 500)
 
 @system_calls_bp.route('/history', methods=['GET'])
 @token_required

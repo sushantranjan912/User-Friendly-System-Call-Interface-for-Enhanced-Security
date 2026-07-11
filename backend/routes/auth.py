@@ -65,7 +65,9 @@ def register():
         }, 'Registration successful')), 201
         
     except Exception as e:
-        return error_response(f'Registration failed: {str(e)}', 500)
+        import logging
+        logging.exception("Registration failed")
+        return error_response('Registration failed. Please try again.', 500)
 
 @auth_bp.route('/login', methods=['POST'])
 def login():
