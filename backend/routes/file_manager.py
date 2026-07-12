@@ -3,6 +3,7 @@ import os
 import shutil
 import time
 import json
+from pathlib import Path
 from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
 from database.db_connection import Database
@@ -13,6 +14,27 @@ from config import Config
 
 file_manager_bp = Blueprint('file_manager', __name__)
 db = Database(Config.DATABASE_PATH)
+
+def safe_filename(filename: str) -> str:
+    """
+    Sanitize filename to prevent path traversal attacks.
+
+    Extracts only the filename component and ensures the resolved path
+    remains within the sandbox directory.
+    """
+    safe_name = secure_filename(filename)
+    if not safe_name:
+        raise ValueError("Invalid or empty filename")
+
+    safe_name = Path(safe_name).name
+
+    test_path = os.path.realpath(os.path.join(SANDBOX_DIR, safe_name))
+    sandbox_real = os.path.realpath(SANDBOX_DIR)
+
+    if not test_path.startswith(sandbox_real + os.sep) and test_path != sandbox_real:
+        raise ValueError("Path traversal detected")
+
+    return safe_name
 
 @file_manager_bp.route('/', methods=['GET'])
 @token_required
@@ -259,8 +281,8 @@ def upload_file(current_user):
             from cryptography.fernet import Fernet
             import base64
             import json
-            
-            filename = secure_filename(file.filename)
+
+            filename = safe_filename(file.filename)
             encrypt = request.form.get('encrypt', 'false').lower() == 'true'
             passcode = request.form.get('passcode', '')
             permissions_str = request.form.get('permissions', '{"view": true, "download": true, "edit": false, "delete": false}')
