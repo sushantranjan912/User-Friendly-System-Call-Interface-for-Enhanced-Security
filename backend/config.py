@@ -1,13 +1,25 @@
 import os
+import sys
 from dotenv import load_dotenv
 
 load_dotenv()
 
+def _validate_secret_key(key_name: str) -> str:
+    """Validate that a secret key is set and meets minimum security requirements."""
+    value = os.getenv(key_name)
+    if not value:
+        print(f"FATAL: {key_name} environment variable is not set.", file=sys.stderr)
+        sys.exit(1)
+    if len(value) < 32:
+        print(f"FATAL: {key_name} must be at least 32 characters.", file=sys.stderr)
+        sys.exit(1)
+    return value
+
 class Config:
-    SECRET_KEY = os.getenv('SECRET_KEY', 'dev-secret-key')
-    JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY', 'dev-jwt-secret')
+    SECRET_KEY = _validate_secret_key('SECRET_KEY')
+    JWT_SECRET_KEY = _validate_secret_key('JWT_SECRET_KEY')
     DATABASE_PATH = os.getenv('DATABASE_PATH', 'database/database.db')
-    ENCRYPTION_KEY = os.getenv('ENCRYPTION_KEY', 'change-this-to-a-secure-key-in-production')
+    ENCRYPTION_KEY = _validate_secret_key('ENCRYPTION_KEY')
     
     # JWT Configuration
     JWT_ACCESS_TOKEN_EXPIRES = 3600  # 1 hour
