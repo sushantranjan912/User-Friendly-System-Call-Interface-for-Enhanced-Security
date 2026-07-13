@@ -37,8 +37,9 @@ def enforce_authentication():
 
 @system_calls_bp.route('/execute', methods=['POST'])
 @token_required
+@role_required(['admin'])
 def execute_command(current_user):
-    """Execute a system call"""
+    """Execute a system call (admin only)"""
     data = request.get_json()
     command = data.get('command', '').strip()
     
