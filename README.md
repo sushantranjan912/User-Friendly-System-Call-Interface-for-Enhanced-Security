@@ -1,73 +1,22 @@
-## 🧭 Installation & Usage
+# User-Friendly System Call Interface for Enhanced Security
 
-Follow these steps carefully to set up and run the project locally.
+## 📑 Table of Contents
 
----
+- [Project Structure](#project-structure)
+- [Prerequisites](#prerequisites)
+- [Local Setup Instructions](#local-setup-instructions)
+  - [1. Clone the Repository](#1-clone-the-repository)
+  - [2. Create a Virtual Environment](#2-create-a-virtual-environment)
+  - [3. Install the Python Dependencies](#3-install-the-python-dependencies)
+  - [4. Configure Environment Variables (Optional)](#4-configure-environment-variables-optional)
+  - [5. Run the Backend Server](#5-run-the-backend-server)
+  - [6. Open the App in Your Browser](#6-open-the-app-in-your-browser)
+- [Correct Runtime Command](#correct-runtime-command)
+- [How to Use the App](#how-to-use-the-app)
+- [Dependencies Explained](#dependencies-explained)
+- [Main API Areas](#main-api-areas)
+- [How to Test](#how-to-test)
 
-# ✅ Prerequisites
-
-Make sure the following are installed on your system:
-
-
-**Why this project matters:**
-* Python 3.10 or above
-* Git
-* A code editor like VS Code
-
-You can verify installation using:
-
-```bash
-python --version
-git --version
-```
-
----
-
-# 📥 Step 1: Clone the Repository
-
-Open terminal or command prompt and run:
-
-```bash
-git clone https://github.com/sushantranjan912/User-Friendly-System-Call-Interface-for-Enhanced-Security.git
-```
-
-This downloads the project to your computer.
-
-Now move into the project folder:
-
-```bash
-cd User-Friendly-System-Call-Interface-for-Enhanced-Security
-```
-
----
-
-# 🛠️ Step 2: Create Virtual Environment
-
-Create a Python virtual environment:
-
-```bash
-python -m venv venv
-```
-
-Activate the virtual environment:
-
-### Windows
-
-```bash
-venv\Scripts\activate
-```
-
-### Linux / macOS
-
-```bash
-source venv/bin/activate
-```
-
-After activation, you should see `(venv)` in the terminal.
-
----
-
-# 📦 Step 3: Install Dependencies
 
 ## Project structure
 
@@ -270,98 +219,3 @@ http://localhost:5000/api/test
 based on your requirements.
 
 ---
-
-# 🚀 Step 5: Run the Backend Server
-
-Move into backend directory:
-
-```bash
-cd backend
-```
-
-Start the FastAPI server:
-
-```bash
-uvicorn main:app --reload
-```
-
-If successful, you will see output similar to:
-
-```bash
-Uvicorn running on http://127.0.0.1:8000
-```
-
-The backend server is now running locally.
-
----
-
-# 🌐 Step 6: Launch Frontend
-
-Open the frontend files in your browser.
-
-You can either:
-
-* Open `frontend/index.html` directly
-  OR
-* Run a frontend development server if configured
-
----
-
-# 🔑 Step 7: Login & Use Features
-
-After launching the project:
-
-* Login using user/admin credentials
-* Upload and manage files
-* View logs and activity
-* Access dashboard features based on your role
-
----
-
-# 📊 Admin Dashboard
-
-Admins can:
-
-* Monitor system activity
-* View audit logs
-* Check unauthorized access attempts
-* Analyze file and user statistics
-
----
-
-# ❗ Common Beginner Issues
-
-## `uvicorn` not recognized
-
-Install uvicorn manually:
-
-```bash
-pip install uvicorn
-```
-
----
-
-## Permission denied while activating virtual environment
-
-Try running terminal as administrator or use the correct activation command for your OS.
-
----
-
-## Missing dependencies
-
-Run again:
-
-```bash
-pip install -r requirements.txt
-```
-
----
-
-# ✅ Project Successfully Running
-
-If everything works correctly:
-
-* Backend runs on localhost
-* Frontend opens successfully
-* Login system works
-* Dashboard and file manager become accessible
