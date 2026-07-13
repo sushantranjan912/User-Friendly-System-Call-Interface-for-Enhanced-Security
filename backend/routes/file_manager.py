@@ -347,7 +347,14 @@ def upload_file(current_user):
             
             # Save permissions and lock status
             save_file_permissions(final_filename, permissions, current_user['user_id'], applock, lock_hash)
-            
+
+            # Record file ownership in database
+            db.execute_insert(
+                '''INSERT OR REPLACE INTO files (user_id, filename, original_filename, file_size, is_encrypted)
+                   VALUES (?, ?, ?, ?, ?)''',
+                (current_user['user_id'], final_filename, filename, len(content), 1 if encrypt else 0)
+            )
+
             return jsonify(success_response({
                 'filename': final_filename,
                 'encrypted': encrypt,
@@ -414,11 +421,28 @@ def download_file(current_user, filename):
         filename = secure_filename(filename)
         if not is_safe_path(filename):
              return error_response('Invalid filename.')
-        
+
         file_path = os.path.join(SANDBOX_DIR, filename)
         if not os.path.exists(file_path):
             return error_response('File not found.', 404)
-        
+
+        # Verify file ownership (admin can access any file)
+        if current_user['role'] != 'admin':
+            file_record = db.execute_query(
+                'SELECT user_id FROM files WHERE filename = ?',
+                (filename,)
+            )
+            if not file_record or file_record[0]['user_id'] != current_user['user_id']:
+                from utils.secure_ops import log_secure_action
+                log_secure_action(
+                    current_user['user_id'],
+                    'file_download_denied',
+                    get_client_ip(request),
+                    'failure',
+                    f'Unauthorized access attempt for file: {filename}'
+                )
+                return error_response('You do not have permission to download this file.', 403)
+
         # Check download permission (admin bypasses this check)
         if current_user['role'] != 'admin':
             permissions = get_file_permissions(filename)

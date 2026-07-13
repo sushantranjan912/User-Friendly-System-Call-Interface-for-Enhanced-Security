@@ -33,6 +33,21 @@ CREATE TABLE IF NOT EXISTS logs (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
 );
 
+-- Files Table
+CREATE TABLE IF NOT EXISTS files (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    filename TEXT NOT NULL,
+    original_filename TEXT,
+    file_size INTEGER,
+    content_type TEXT,
+    is_encrypted BOOLEAN DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    UNIQUE(user_id, filename)
+);
+
 -- Indexes for performance
 CREATE INDEX IF NOT EXISTS idx_users_username ON users(username);
 CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
@@ -41,6 +56,8 @@ CREATE INDEX IF NOT EXISTS idx_system_calls_executed_at ON system_calls(executed
 CREATE INDEX IF NOT EXISTS idx_logs_user_id ON logs(user_id);
 CREATE INDEX IF NOT EXISTS idx_logs_created_at ON logs(created_at);
 CREATE INDEX IF NOT EXISTS idx_logs_action_type ON logs(action_type);
+CREATE INDEX IF NOT EXISTS idx_files_user_id ON files(user_id);
+CREATE INDEX IF NOT EXISTS idx_files_filename ON files(filename);
 
 -- Login Attempts Table (for rate limiting/blocking)
 CREATE TABLE IF NOT EXISTS login_attempts (
