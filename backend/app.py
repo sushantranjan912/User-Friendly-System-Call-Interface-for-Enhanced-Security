@@ -1,5 +1,6 @@
 from flask import Flask, send_from_directory, jsonify, request
 from flask_cors import CORS
+from flask_wtf.csrf import CSRFProtect
 from config import Config
 from routes.auth import auth_bp
 from routes.system_calls import system_calls_bp
@@ -19,8 +20,11 @@ app.config.from_object(Config)
 # SECURITY CONFIGURATION
 # =========================
 
-# Enable CORS
-CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=False)
+# Initialize CSRF protection
+csrf = CSRFProtect(app)
+
+# Enable CORS with credential support for CSRF-protected endpoints
+CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
 
 # Limit request size (5MB)
 app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024
