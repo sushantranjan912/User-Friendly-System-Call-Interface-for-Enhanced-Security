@@ -66,13 +66,18 @@ def decrypt_file_with_password(encrypted_content, password):
     return cipher.decrypt(ciphertext)
 
 def log_secure_action(user_id, action_type, ip_address, status, details):
-    """Log action with encrypted details"""
+    """Log action with encrypted details to both database and append-only audit file"""
     encrypted_details = encrypt_data(details)
-    
+
+    # Log to database
     db.execute_insert(
         'INSERT INTO logs (user_id, action_type, ip_address, status, details) VALUES (?, ?, ?, ?, ?)',
         (user_id, action_type, ip_address, status, encrypted_details)
     )
+
+    # Also log to append-only audit file for durability and tamper-evidence
+    from utils.audit_logger import log_audit_event
+    log_audit_event(user_id, action_type, ip_address, status, details)
 
 def is_safe_path(path):
     """Ensure path is within sandbox directory"""
