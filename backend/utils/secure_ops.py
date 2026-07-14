@@ -1,7 +1,10 @@
 import os
 import subprocess
+import base64
 from datetime import datetime
 from cryptography.fernet import Fernet
+from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+from cryptography.hazmat.primitives import hashes
 from database.db_connection import Database
 from config import Config
 from werkzeug.utils import secure_filename
@@ -34,6 +37,33 @@ def decrypt_data(data):
         return cipher_suite.decrypt(data.encode()).decode()
     except:
         return "[Decryption Failed]"
+
+def derive_key_from_password(password, salt):
+    """Derive encryption key from password using PBKDF2"""
+    kdf = PBKDF2HMAC(
+        algorithm=hashes.SHA256(),
+        length=32,
+        salt=salt,
+        iterations=600_000,
+    )
+    key = base64.urlsafe_b64encode(kdf.derive(password.encode()))
+    return key
+
+def encrypt_file_with_password(content, password):
+    """Encrypt file content with password-derived key"""
+    salt = os.urandom(16)
+    key = derive_key_from_password(password, salt)
+    cipher = Fernet(key)
+    encrypted_content = cipher.encrypt(content)
+    return salt + encrypted_content
+
+def decrypt_file_with_password(encrypted_content, password):
+    """Decrypt file content with password-derived key"""
+    salt = encrypted_content[:16]
+    ciphertext = encrypted_content[16:]
+    key = derive_key_from_password(password, salt)
+    cipher = Fernet(key)
+    return cipher.decrypt(ciphertext)
 
 def log_secure_action(user_id, action_type, ip_address, status, details):
     """Log action with encrypted details to both database and append-only audit file"""

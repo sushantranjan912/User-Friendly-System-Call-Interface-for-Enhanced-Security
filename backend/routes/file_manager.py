@@ -307,14 +307,10 @@ def upload_file(current_user):
             if encrypt:
                 if not passcode:
                     return error_response('Passcode is required for encryption')
-                
-                # Generate encryption key from passcode
-                import hashlib
-                key = base64.urlsafe_b64encode(hashlib.sha256(passcode.encode()).digest())
-                cipher = Fernet(key)
-                
-                # Encrypt the content
-                encrypted_content = cipher.encrypt(content)
+
+                # Encrypt the content with password-derived key (PBKDF2)
+                from utils.secure_ops import encrypt_file_with_password
+                encrypted_content = encrypt_file_with_password(content, passcode)
                 
                 # Save encrypted file with .enc extension
                 final_filename = filename + '.enc'

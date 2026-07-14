@@ -1,4 +1,5 @@
 from flask import Blueprint, request, jsonify
+from flask_wtf.csrf import generate_csrf
 from datetime import datetime, timedelta
 from database.db_connection import Database
 from utils.auth_utils import hash_password, verify_password, generate_token
@@ -137,3 +138,10 @@ def logout():
             )
     
     return jsonify(success_response(None, 'Logout successful'))
+
+
+@auth_bp.route('/csrf-token', methods=['GET'])
+def get_csrf_token():
+    """Get CSRF token for API requests"""
+    token = generate_csrf()
+    return jsonify(success_response({'csrf_token': token}, 'CSRF token generated'))
