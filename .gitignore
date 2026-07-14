@@ -1,5 +1,7 @@
 backend/database/database.db
 database/database.db
+backend/logs/*.log
+backend/logs/*.json
 __pycache__/
 *.pyc
 venv/
