@@ -1,5 +1,6 @@
 import os
 import subprocess
+import shlex
 import base64
 from datetime import datetime
 from cryptography.fernet import Fernet
@@ -148,30 +149,32 @@ def secure_delete(path, user_id, ip_address):
         raise e
 
 def secure_execute(command, user_id, ip_address):
-    """Securely execute a command"""
-    # Whitelist check
-    cmd_parts = command.split()
+    """Securely execute a command without shell injection"""
+    try:
+        cmd_parts = shlex.split(command)
+    except ValueError as e:
+        log_secure_action(user_id, 'secure_execute', ip_address, 'failure', f'Invalid command syntax: {str(e)}')
+        raise ValueError("Invalid command syntax.")
+
     base_cmd = cmd_parts[0] if cmd_parts else ""
-    
+
     if base_cmd not in Config.ALLOWED_COMMANDS:
         log_secure_action(user_id, 'secure_execute', ip_address, 'failure', f'Unauthorized command: {command}')
         raise ValueError("Command not allowed.")
-        
+
     try:
-        # Execute
         result = subprocess.run(
-            command,
-            shell=True,
+            cmd_parts,
             capture_output=True,
             text=True,
             timeout=10
         )
-        
+
         status = 'success' if result.returncode == 0 else 'failure'
         output = result.stdout if result.returncode == 0 else result.stderr
-        
+
         log_secure_action(user_id, 'secure_execute', ip_address, status, f'Executed: {command}')
-        
+
         return {
             'status': status,
             'output': output,
