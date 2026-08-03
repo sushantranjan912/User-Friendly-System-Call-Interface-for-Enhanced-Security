@@ -29,6 +29,7 @@ CREATE TABLE IF NOT EXISTS logs (
     ip_address TEXT,
     status TEXT CHECK(status IN ('success', 'failure')),
     details TEXT,
+    mac TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
 );

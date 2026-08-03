@@ -8,6 +8,7 @@ from cryptography.hazmat.primitives import hashes
 from database.db_connection import Database
 from config import Config
 from werkzeug.utils import secure_filename
+from utils.audit_hmac import generate_audit_mac
 
 db = Database(Config.DATABASE_PATH)
 
@@ -69,10 +70,19 @@ def log_secure_action(user_id, action_type, ip_address, status, details):
     """Log action with encrypted details to both database and append-only audit file"""
     encrypted_details = encrypt_data(details)
 
+    log_data = {
+        'user_id': user_id,
+        'action_type': action_type,
+        'ip_address': ip_address,
+        'status': status,
+        'details': encrypted_details
+    }
+    mac = generate_audit_mac(Config.SECRET_KEY, log_data)
+
     # Log to database
     db.execute_insert(
-        'INSERT INTO logs (user_id, action_type, ip_address, status, details) VALUES (?, ?, ?, ?, ?)',
-        (user_id, action_type, ip_address, status, encrypted_details)
+        'INSERT INTO logs (user_id, action_type, ip_address, status, details, mac) VALUES (?, ?, ?, ?, ?, ?)',
+        (user_id, action_type, ip_address, status, encrypted_details, mac)
     )
 
     # Also log to append-only audit file for durability and tamper-evidence
