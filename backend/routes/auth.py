@@ -5,6 +5,7 @@ from database.db_connection import Database
 from utils.auth_utils import hash_password, verify_password, generate_token
 from utils.validators import validate_email, validate_username, validate_password, validate_role
 from utils.helpers import get_client_ip, success_response, error_response
+from utils.audit_hmac import generate_audit_mac
 from config import Config
 
 auth_bp = Blueprint('auth', __name__)
@@ -50,10 +51,19 @@ def register():
             'INSERT INTO users (username, email, password_hash, role) VALUES (?, ?, ?, ?)',
             (username, email, password_hash, role)
         )
-        
+
+        log_data = {
+            'user_id': user_id,
+            'action_type': 'register',
+            'ip_address': get_client_ip(request),
+            'status': 'success',
+            'details': f'User {username} registered'
+        }
+        mac = generate_audit_mac(Config.SECRET_KEY, log_data)
+
         db.execute_insert(
-            'INSERT INTO logs (user_id, action_type, ip_address, status, details) VALUES (?, ?, ?, ?, ?)',
-            (user_id, 'register', get_client_ip(request), 'success', f'User {username} registered')
+            'INSERT INTO logs (user_id, action_type, ip_address, status, details, mac) VALUES (?, ?, ?, ?, ?, ?)',
+            (user_id, 'register', get_client_ip(request), 'success', f'User {username} registered', mac)
         )
         
         return jsonify(success_response({
@@ -87,26 +97,53 @@ def login():
     )
     
     if not users:
+        log_data = {
+            'user_id': None,
+            'action_type': 'login',
+            'ip_address': client_ip,
+            'status': 'failure',
+            'details': f'Failed login attempt for {email}'
+        }
+        mac = generate_audit_mac(Config.SECRET_KEY, log_data)
+
         db.execute_insert(
-            'INSERT INTO logs (action_type, ip_address, status, details) VALUES (?, ?, ?, ?)',
-            ('login', client_ip, 'failure', f'Failed login attempt for {email}')
+            'INSERT INTO logs (action_type, ip_address, status, details, mac) VALUES (?, ?, ?, ?, ?)',
+            ('login', client_ip, 'failure', f'Failed login attempt for {email}', mac)
         )
         return error_response('Invalid email or password.', 401)
     
     user = dict(users[0])
     
     if not verify_password(password, user['password_hash']):
+        log_data = {
+            'user_id': user['id'],
+            'action_type': 'login',
+            'ip_address': client_ip,
+            'status': 'failure',
+            'details': 'Invalid password'
+        }
+        mac = generate_audit_mac(Config.SECRET_KEY, log_data)
+
         db.execute_insert(
-            'INSERT INTO logs (user_id, action_type, ip_address, status, details) VALUES (?, ?, ?, ?, ?)',
-            (user['id'], 'login', client_ip, 'failure', 'Invalid password')
+            'INSERT INTO logs (user_id, action_type, ip_address, status, details, mac) VALUES (?, ?, ?, ?, ?, ?)',
+            (user['id'], 'login', client_ip, 'failure', 'Invalid password', mac)
         )
         return error_response('Invalid email or password.', 401)
     
     token = generate_token(user['id'], user['username'], user['role'])
-    
+
+    log_data = {
+        'user_id': user['id'],
+        'action_type': 'login',
+        'ip_address': client_ip,
+        'status': 'success',
+        'details': 'User logged in'
+    }
+    mac = generate_audit_mac(Config.SECRET_KEY, log_data)
+
     db.execute_insert(
-        'INSERT INTO logs (user_id, action_type, ip_address, status, details) VALUES (?, ?, ?, ?, ?)',
-        (user['id'], 'login', client_ip, 'success', 'User logged in')
+        'INSERT INTO logs (user_id, action_type, ip_address, status, details, mac) VALUES (?, ?, ?, ?, ?, ?)',
+        (user['id'], 'login', client_ip, 'success', 'User logged in', mac)
     )
     
     return jsonify(success_response({
@@ -132,9 +169,18 @@ def logout():
         payload = decode_token(token)
         
         if payload:
+            log_data = {
+                'user_id': payload['user_id'],
+                'action_type': 'logout',
+                'ip_address': get_client_ip(request),
+                'status': 'success',
+                'details': 'User logged out'
+            }
+            mac = generate_audit_mac(Config.SECRET_KEY, log_data)
+
             db.execute_insert(
-                'INSERT INTO logs (user_id, action_type, ip_address, status, details) VALUES (?, ?, ?, ?, ?)',
-                (payload['user_id'], 'logout', get_client_ip(request), 'success', 'User logged out')
+                'INSERT INTO logs (user_id, action_type, ip_address, status, details, mac) VALUES (?, ?, ?, ?, ?, ?)',
+                (payload['user_id'], 'logout', get_client_ip(request), 'success', 'User logged out', mac)
             )
     
     return jsonify(success_response(None, 'Logout successful'))

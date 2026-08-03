@@ -19,10 +19,12 @@ class Database:
         schema_path = os.path.join(os.path.dirname(__file__), 'schema.sql')
         with open(schema_path, 'r') as f:
             schema = f.read()
-        
+
         with self.get_connection() as conn:
             conn.executescript(schema)
             conn.commit()
+
+        os.chmod(self.db_path, 0o600)
     
     @contextmanager
     def get_connection(self):
