@@ -5,6 +5,7 @@ from database.db_connection import Database
 from utils.auth_utils import hash_password, verify_password, generate_token
 from utils.validators import validate_email, validate_username, validate_password, validate_role
 from utils.helpers import get_client_ip, success_response, error_response
+from utils.session_manager import create_session
 from config import Config
 
 auth_bp = Blueprint('auth', __name__)
@@ -103,14 +104,17 @@ def login():
         return error_response('Invalid email or password.', 401)
     
     token = generate_token(user['id'], user['username'], user['role'])
-    
+
+    session_id = create_session(user['id'], client_ip)
+
     db.execute_insert(
         'INSERT INTO logs (user_id, action_type, ip_address, status, details) VALUES (?, ?, ?, ?, ?)',
         (user['id'], 'login', client_ip, 'success', 'User logged in')
     )
-    
+
     return jsonify(success_response({
         'token': token,
+        'session_id': session_id,
         'user': {
             'id': user['id'],
             'username': user['username'],
