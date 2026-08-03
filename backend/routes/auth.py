@@ -5,6 +5,7 @@ from database.db_connection import Database
 from utils.auth_utils import hash_password, verify_password, generate_token
 from utils.validators import validate_email, validate_username, validate_password, validate_role
 from utils.helpers import get_client_ip, success_response, error_response
+from utils.login_lockout import record_login_attempt, is_account_locked, get_lockout_remaining_time, clear_login_attempts
 from config import Config
 
 auth_bp = Blueprint('auth', __name__)
@@ -72,21 +73,31 @@ def register():
 def login():
     """Login user and return JWT token"""
     data = request.get_json() or {}
-    
+
     email = data.get('email', '').strip()
     password = data.get('password', '')
-    
+
     if not email or not password:
         return error_response('Email and password are required.', 400)
-    
+
     client_ip = get_client_ip(request)
-    
+
     users = db.execute_query(
         'SELECT id, username, email, password_hash, role FROM users WHERE email = ?',
         (email,)
     )
+
+    if users:
+        username = dict(users[0])['username']
+        if is_account_locked(client_ip, username):
+            remaining_time = get_lockout_remaining_time(client_ip, username)
+            record_login_attempt(client_ip, username, False)
+            return error_response(f'Account locked due to too many failed attempts. Try again in {remaining_time} seconds.', 429)
+    else:
+        username = email
     
     if not users:
+        record_login_attempt(client_ip, username, False)
         db.execute_insert(
             'INSERT INTO logs (action_type, ip_address, status, details) VALUES (?, ?, ?, ?)',
             ('login', client_ip, 'failure', f'Failed login attempt for {email}')
@@ -96,6 +107,7 @@ def login():
     user = dict(users[0])
     
     if not verify_password(password, user['password_hash']):
+        record_login_attempt(client_ip, username, False)
         db.execute_insert(
             'INSERT INTO logs (user_id, action_type, ip_address, status, details) VALUES (?, ?, ?, ?, ?)',
             (user['id'], 'login', client_ip, 'failure', 'Invalid password')
@@ -103,7 +115,10 @@ def login():
         return error_response('Invalid email or password.', 401)
     
     token = generate_token(user['id'], user['username'], user['role'])
-    
+
+    clear_login_attempts(username)
+    record_login_attempt(client_ip, username, True)
+
     db.execute_insert(
         'INSERT INTO logs (user_id, action_type, ip_address, status, details) VALUES (?, ?, ?, ?, ?)',
         (user['id'], 'login', client_ip, 'success', 'User logged in')
